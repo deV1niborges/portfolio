@@ -1,0 +1,16 @@
+@charset "UTF-8";
+
+* {
+  padding: 0px;
+  margin: 0px;
+  box-sizing: border-box;
+}
+
+body {
+  background: black;
+  height: 100dvh;
+}
+
+h1 {
+  color: rgb(245, 249, 253);
+}

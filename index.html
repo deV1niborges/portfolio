@@ -3,72 +3,69 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portfólio</title>
-    <link rel="stylesheet" href="style.css" />
-    <!-- Fontes -->
+    <meta
+      name="description"
+      content="Portfólio de Vinicius Borges, estudante de ADS com foco em desenvolvimento Front-end, interfaces responsivas e experiências web modernas."
+    />
+    <meta name="theme-color" content="#02060d" />
+
+    <title>Vinicius Borges | Front-end Developer</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
     <link
       href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <!-- Favicons -->
-    <link rel="icon" href="./favicon/favicon.ico?v=3" sizes="any" />
 
+    <link rel="stylesheet" href="style.css" />
+
+    <link rel="icon" href="./favicon/favicon.ico?v=4" sizes="any" />
     <link
       rel="icon"
       type="image/png"
       sizes="32x32"
-      href="./favicon/favicon-32x32.png?v=3"
+      href="./favicon/favicon-32x32.png?v=4"
     />
-
     <link
       rel="icon"
       type="image/png"
       sizes="16x16"
-      href="./favicon/favicon-16x16.png?v=3"
+      href="./favicon/favicon-16x16.png?v=4"
     />
-
-    <link rel="shortcut icon" href="./favicon/favicon.ico?v=3" />
-
-    <!-- iPhone -->
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href="./favicon/apple-touch-icon-180x180.png?v=3"
+      href="./favicon/apple-touch-icon-180x180.png?v=4"
     />
+    <link rel="manifest" href="./site.webmanifest?v=4" />
 
-    <!-- Android -->
-    <link rel="manifest" href="./site.webmanifest?v=3" />
-
-    <meta name="theme-color" content="#02060d" />
-    <!--
-    Importmap: deixa o navegador entender "three" e "gsap" como
-    módulos ES normais, sem precisar de bundler (Vite/Webpack) nem
-    instalar nada localmente. Isso é o que permite manter o projeto
-    em HTML/CSS/JS puro.
-  -->
-    <script defer type="importmap">
+    <script type="importmap">
       {
         "imports": {
           "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
-          "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/+esm"
+          "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js",
+          "gsap/ScrollTrigger": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/ScrollTrigger.js"
         }
       }
     </script>
   </head>
-  <body>
-    <!-- =========================================
-     WELCOME
-========================================= -->
 
+  <body>
+    <a class="skip-link" href="#home">Pular para o conteúdo</a>
+
+    <!-- =========================================================
+         INTRO / THREE.JS
+    ========================================================== -->
+    <canvas id="webgl" aria-hidden="true"></canvas>
+
+    <!-- =========================================================
+         WELCOME
+    ========================================================== -->
     <section class="welcome-screen" id="welcome-screen" aria-hidden="true">
       <div class="welcome-noise" aria-hidden="true"></div>
 
       <div class="welcome-content">
-        <!-- pequenos pixels decorativos -->
         <div class="welcome-pixels" aria-hidden="true">
           <span></span>
           <span></span>
@@ -77,9 +74,7 @@
           <span></span>
         </div>
 
-        <!-- título -->
         <div class="welcome-title-wrapper">
-          <!-- cópias usadas somente no glitch -->
           <h1
             class="welcome-title welcome-title-glitch welcome-title-glitch-a"
             aria-hidden="true"
@@ -94,65 +89,95 @@
             BEM-VINDO(A)
           </h1>
 
-          <!-- texto real -->
           <h1 class="welcome-title" id="welcome-title">BEM-VINDO(A)</h1>
         </div>
 
-        <!-- linha -->
         <div class="welcome-divider" aria-hidden="true"></div>
-
-        <!-- subtítulo -->
         <p class="welcome-subtitle" id="welcome-subtitle">AO MEU PORTFÓLIO</p>
       </div>
 
-      <!-- scanner -->
       <div class="welcome-scanline" aria-hidden="true"></div>
     </section>
+
     <!-- =========================================================
-     HERO
-========================================================= -->
+         UI GLOBAL
+    ========================================================== -->
+    <div class="site-progress" aria-hidden="true">
+      <span class="site-progress-bar"></span>
+    </div>
 
+    <div class="mouse-glow" aria-hidden="true"></div>
+
+    <header class="site-nav" id="site-nav">
+      <a class="nav-brand" href="#home" aria-label="Ir para o início">
+        <span class="nav-brand-mark">V</span>
+        <span class="nav-brand-text">DEV1NIBORGES</span>
+      </a>
+
+      <button
+        class="nav-toggle"
+        type="button"
+        aria-label="Abrir menu"
+        aria-controls="nav-links"
+        aria-expanded="false"
+      >
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="nav-links" id="nav-links" aria-label="Navegação principal">
+        <a href="#home" data-section="home"><span>01</span> HOME</a>
+        <a href="#sobre" data-section="sobre"><span>02</span> SOBRE</a>
+        <a href="#stack" data-section="stack"><span>03</span> STACK</a>
+        <a href="#projetos" data-section="projetos"><span>04</span> PROJETOS</a>
+        <a href="#formacao" data-section="formacao"><span>05</span> FORMAÇÃO</a>
+        <a href="#cursos" data-section="cursos"><span>06</span> CURSOS</a>
+        <a href="#contato" data-section="contato"><span>07</span> CONTATO</a>
+      </nav>
+
+      <a
+        class="nav-cv"
+        href="./assets/curriculo-vinicius-borges.pdf"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        CV ↗
+      </a>
+    </header>
+
+    <!-- =========================================================
+         PORTFÓLIO
+    ========================================================== -->
     <main class="portfolio-content">
+      <!-- =======================================================
+           01 / HERO
+      ======================================================== -->
       <section class="hero" id="home" aria-labelledby="hero-title">
-        <!-- fundo digital -->
         <div class="hero-grid" aria-hidden="true"></div>
-
         <div class="hero-scan" aria-hidden="true"></div>
 
         <div class="hero-container">
-          <!-- =====================================================
-           CABEÇALHO DA SEÇÃO
-      ====================================================== -->
-
           <div class="hero-top">
-            <span class="section-index"> &lt;01 / HOME&gt; </span>
+            <span class="section-index">&lt;01 / HOME&gt;</span>
 
             <div class="hero-status">
               <span class="status-dot" aria-hidden="true"></span>
-
-              <span> BUSCANDO ESTÁGIO FRONT-END </span>
+              <span>BUSCANDO ESTÁGIO FRONT-END</span>
             </div>
           </div>
-
-          <!-- =====================================================
-           CONTEÚDO
-      ====================================================== -->
 
           <div class="hero-content">
             <div class="hero-main">
               <p class="hero-eyebrow">SYSTEM.USER_PROFILE</p>
 
               <h1 class="hero-name" id="hero-title">
-                <span class="hero-name-line"> VINICIUS </span>
-
-                <span class="hero-name-line hero-name-accent"> BORGES </span>
+                <span class="hero-name-line">VINICIUS</span>
+                <span class="hero-name-line hero-name-accent">BORGES</span>
               </h1>
 
               <div class="hero-role">
-                <span class="hero-role-arrow"> &gt; </span>
-
-                <span> FRONT-END DEVELOPER </span>
-
+                <span class="hero-role-arrow">&gt;</span>
+                <span>FRONT-END DEVELOPER</span>
                 <span class="hero-cursor" aria-hidden="true"></span>
               </div>
 
@@ -161,15 +186,10 @@
                 utilizando HTML, CSS, JavaScript e React.
               </p>
 
-              <!-- =================================================
-               BOTÕES
-          ================================================== -->
-
               <div class="hero-actions">
                 <a href="#projetos" class="hero-button hero-button-primary">
-                  <span> VER PROJETOS </span>
-
-                  <span aria-hidden="true"> ↓ </span>
+                  <span>VER PROJETOS</span>
+                  <span aria-hidden="true">↓</span>
                 </a>
 
                 <a
@@ -178,65 +198,59 @@
                   rel="noopener noreferrer"
                   class="hero-button hero-button-secondary"
                 >
-                  <span> GITHUB </span>
+                  <span>GITHUB</span>
+                  <span aria-hidden="true">↗</span>
+                </a>
 
-                  <span aria-hidden="true"> ↗ </span>
+                <a
+                  href="./assets/curriculo-vinicius-borges.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hero-button hero-button-ghost"
+                >
+                  <span>CURRÍCULO</span>
+                  <span aria-hidden="true">↗</span>
                 </a>
               </div>
             </div>
 
-            <!-- =====================================================
-             PAINEL LATERAL
-        ====================================================== -->
-
             <aside class="hero-terminal" aria-label="Informações profissionais">
               <div class="terminal-header">
-                <div class="terminal-dots">
+                <div class="terminal-dots" aria-hidden="true">
                   <span></span>
                   <span></span>
                   <span></span>
                 </div>
-
-                <span> PROFILE.DATA </span>
+                <span>PROFILE.DATA</span>
               </div>
 
               <div class="terminal-body">
                 <div class="terminal-row">
-                  <span> NAME </span>
-
-                  <strong> VINICIUS BORGES </strong>
+                  <span>NAME</span>
+                  <strong>VINICIUS BORGES</strong>
                 </div>
-
                 <div class="terminal-row">
-                  <span> LOCATION </span>
-
-                  <strong> MINAS GERAIS // BR </strong>
+                  <span>LOCATION</span>
+                  <strong>MINAS GERAIS // BR</strong>
                 </div>
-
                 <div class="terminal-row">
-                  <span> FOCUS </span>
-
-                  <strong> FRONT-END </strong>
+                  <span>FOCUS</span>
+                  <strong>FRONT-END</strong>
                 </div>
-
                 <div class="terminal-row">
-                  <span> EDUCATION </span>
-
-                  <strong> ADS </strong>
+                  <span>EDUCATION</span>
+                  <strong>ADS</strong>
                 </div>
-
                 <div class="terminal-row">
-                  <span> STACK </span>
-
-                  <strong> JS / REACT </strong>
+                  <span>STACK</span>
+                  <strong>JS / REACT</strong>
                 </div>
 
                 <div class="terminal-divider"></div>
 
                 <div class="terminal-loading">
-                  <span> PROFILE LOADED </span>
-
-                  <span> 100% </span>
+                  <span>PROFILE LOADED</span>
+                  <span>100%</span>
                 </div>
 
                 <div class="terminal-progress">
@@ -245,16 +259,11 @@
               </div>
 
               <div class="terminal-footer">
-                <span> ID: DEV1NIBORGES </span>
-
-                <span> ONLINE </span>
+                <span>ID: DEV1NIBORGES</span>
+                <span>ONLINE</span>
               </div>
             </aside>
           </div>
-
-          <!-- =====================================================
-           RODAPÉ HERO
-      ====================================================== -->
 
           <div class="hero-bottom">
             <a
@@ -266,43 +275,28 @@
               LINKEDIN ↗
             </a>
 
-            <span class="hero-location"> 18°S // 44°W // MG </span>
+            <span class="hero-location">MINAS GERAIS // BR</span>
 
             <a href="#sobre" class="hero-scroll">
-              SCROLL
-
-              <span aria-hidden="true"> ↓ </span>
+              SCROLL <span aria-hidden="true">↓</span>
             </a>
           </div>
         </div>
       </section>
-      <!-- =========================================================
-     SOBRE MIM
-========================================================= -->
 
+      <!-- =======================================================
+           02 / SOBRE
+      ======================================================== -->
       <section class="about" id="sobre" aria-labelledby="about-title">
         <div class="about-grid" aria-hidden="true"></div>
 
         <div class="about-container">
-          <!-- =====================================================
-         CABEÇALHO
-    ====================================================== -->
-
           <div class="section-header about-header">
-            <span class="section-index"> &lt;02 / SOBRE&gt; </span>
-
-            <span class="section-system"> USER_PROFILE.DATA </span>
+            <span class="section-index">&lt;02 / SOBRE&gt;</span>
+            <span class="section-system">USER_PROFILE.DATA</span>
           </div>
 
-          <!-- =====================================================
-         CONTEÚDO
-    ====================================================== -->
-
           <div class="about-content">
-            <!-- ===================================================
-           LADO ESQUERDO
-      ==================================================== -->
-
             <div class="about-intro">
               <p class="about-label">// WHO_AM_I</p>
 
@@ -318,169 +312,735 @@
               </p>
 
               <p class="about-text">
-                Busco transformar ideias em interfaces modernas, responsivas e
-                intuitivas utilizando HTML, CSS, JavaScript e React.
+                Transformo ideias em interfaces responsivas e intuitivas usando
+                HTML, CSS, JavaScript e React, aplicando princípios de UI/UX.
               </p>
 
               <p class="about-text">
-                Também possuo experiência prática com APIs REST, Git, GitHub e
-                conhecimentos em Node.js e MongoDB.
+                Também possuo experiência prática com APIs REST, Git/GitHub e
+                conhecimentos em Node.js e MongoDB para integração full-stack.
               </p>
             </div>
 
-            <!-- ===================================================
-           DOSSIÊ
-      ==================================================== -->
-
             <div class="about-profile">
-              <!-- scan -->
               <div class="profile-scan" aria-hidden="true"></div>
-
-              <!-- cantos -->
               <span
                 class="profile-corner profile-corner-tl"
                 aria-hidden="true"
               ></span>
-
               <span
                 class="profile-corner profile-corner-tr"
                 aria-hidden="true"
               ></span>
-
               <span
                 class="profile-corner profile-corner-bl"
                 aria-hidden="true"
               ></span>
-
               <span
                 class="profile-corner profile-corner-br"
                 aria-hidden="true"
               ></span>
 
-              <!-- =================================================
-             HEADER DO DOSSIÊ
-        ================================================== -->
-
               <div class="profile-header">
                 <div>
-                  <span class="profile-code"> PROFILE_001 </span>
-
-                  <strong> VINICIUS BORGES </strong>
+                  <span class="profile-code">PROFILE_001</span>
+                  <strong>VINICIUS BORGES</strong>
                 </div>
 
                 <span class="profile-status">
                   <span class="profile-status-dot" aria-hidden="true"></span>
-
                   ACTIVE
                 </span>
               </div>
 
-              <!-- =================================================
-             DADOS
-        ================================================== -->
-
               <div class="profile-data">
                 <div class="profile-row">
-                  <span class="profile-key"> LOCATION </span>
-
-                  <span class="profile-value"> MINAS GERAIS / BR </span>
+                  <span class="profile-key">LOCATION</span>
+                  <span class="profile-value">MINAS GERAIS / BR</span>
                 </div>
-
                 <div class="profile-row">
-                  <span class="profile-key"> ROLE </span>
-
-                  <span class="profile-value"> FRONT-END DEVELOPER </span>
+                  <span class="profile-key">ROLE</span>
+                  <span class="profile-value">FRONT-END DEVELOPER</span>
                 </div>
-
                 <div class="profile-row">
-                  <span class="profile-key"> EDUCATION </span>
-
-                  <span class="profile-value"> ADS </span>
+                  <span class="profile-key">EDUCATION</span>
+                  <span class="profile-value">ADS</span>
                 </div>
-
                 <div class="profile-row">
-                  <span class="profile-key"> GRADUATION </span>
-
-                  <span class="profile-value"> JUL / 2027 </span>
+                  <span class="profile-key">GRADUATION</span>
+                  <span class="profile-value">JUL / 2027</span>
                 </div>
-
                 <div class="profile-row">
-                  <span class="profile-key"> CORE </span>
-
-                  <span class="profile-value"> HTML / CSS / JS / REACT </span>
+                  <span class="profile-key">CORE</span>
+                  <span class="profile-value">HTML / CSS / JS / REACT</span>
                 </div>
-
                 <div class="profile-row">
-                  <span class="profile-key"> WORKFLOW </span>
-
-                  <span class="profile-value"> GIT / GITHUB </span>
+                  <span class="profile-key">WORKFLOW</span>
+                  <span class="profile-value">GIT / GITHUB</span>
                 </div>
               </div>
-
-              <!-- =================================================
-             IDENTIDADE VISUAL
-        ================================================== -->
 
               <div class="profile-identity">
                 <div class="profile-avatar" aria-hidden="true">
-                  <span class="avatar-bracket"> [ </span>
-
-                  <span class="avatar-letter"> V </span>
-
-                  <span class="avatar-bracket"> ] </span>
+                  <span class="avatar-bracket">[</span>
+                  <span class="avatar-letter">V</span>
+                  <span class="avatar-bracket">]</span>
                 </div>
 
                 <div class="profile-id-data">
-                  <span> DEV_ID </span>
-
-                  <strong> DEV1NIBORGES </strong>
-
-                  <span> SYSTEM.ACCESS </span>
-
-                  <strong class="profile-access"> GRANTED </strong>
+                  <span>DEV_ID</span>
+                  <strong>DEV1NIBORGES</strong>
+                  <span>SYSTEM.ACCESS</span>
+                  <strong class="profile-access">GRANTED</strong>
                 </div>
               </div>
 
-              <!-- =================================================
-             FOOTER
-        ================================================== -->
-
               <div class="profile-footer">
-                <span> FRONT-END PROFILE </span>
-
-                <span> MG // BR </span>
+                <span>FRONT-END PROFILE</span>
+                <span>MG // BR</span>
               </div>
             </div>
           </div>
 
-          <!-- =====================================================
-         MINI INFORMAÇÕES
-    ====================================================== -->
-
           <div class="about-stats">
             <div class="about-stat">
-              <span class="about-stat-number"> 2027 </span>
+              <span class="about-stat-number">2027</span>
+              <span class="about-stat-label">PREVISÃO DE FORMAÇÃO</span>
+            </div>
+            <div class="about-stat">
+              <span class="about-stat-number">ADS</span>
+              <span class="about-stat-label">FORMAÇÃO</span>
+            </div>
+            <div class="about-stat">
+              <span class="about-stat-number">FRONT</span>
+              <span class="about-stat-label">FOCO PRINCIPAL</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
-              <span class="about-stat-label"> PREVISÃO DE FORMAÇÃO </span>
+      <!-- =======================================================
+           03 / TECH STACK
+      ======================================================== -->
+      <section
+        class="tech-section portfolio-section"
+        id="stack"
+        aria-labelledby="stack-title"
+      >
+        <div class="section-noise" aria-hidden="true"></div>
+
+        <div class="section-shell">
+          <div class="section-header stack-header">
+            <span class="section-index">&lt;03 / TECH_STACK&gt;</span>
+            <span class="section-system">MODULES.CONNECTED</span>
+          </div>
+
+          <div class="section-heading-row">
+            <div>
+              <p class="section-kicker">// FERRAMENTAS & TECNOLOGIAS</p>
+              <h2 class="section-title" id="stack-title">
+                MEU <span>ECOSSISTEMA</span><br />DE DESENVOLVIMENTO.
+              </h2>
             </div>
 
-            <div class="about-stat">
-              <span class="about-stat-number"> ADS </span>
+            <p class="section-lead">
+              Base Front-end sólida, complementada por ferramentas de
+              integração, versionamento, publicação e fundamentos full-stack.
+            </p>
+          </div>
 
-              <span class="about-stat-label"> FORMAÇÃO </span>
+          <div class="stack-orbit" aria-label="Mapa visual de tecnologias">
+            <svg class="stack-lines" viewBox="0 0 1000 620" aria-hidden="true">
+              <path data-connection d="M500 310 L180 125" />
+              <path data-connection d="M500 310 L500 90" />
+              <path data-connection d="M500 310 L820 125" />
+              <path data-connection d="M500 310 L160 440" />
+              <path data-connection d="M500 310 L360 535" />
+              <path data-connection d="M500 310 L640 535" />
+              <path data-connection d="M500 310 L840 440" />
+            </svg>
+
+            <div class="stack-core stack-node" data-stack-node>
+              <span class="stack-node-code">CORE_01</span>
+              <strong>JAVASCRIPT</strong>
+              <small>INTERACTION ENGINE</small>
+              <span class="stack-node-pulse" aria-hidden="true"></span>
             </div>
 
-            <div class="about-stat">
-              <span class="about-stat-number"> FRONT </span>
+            <div class="stack-node stack-node-html" data-stack-node>
+              <span>HTML5</span><small>STRUCTURE</small>
+            </div>
+            <div class="stack-node stack-node-css" data-stack-node>
+              <span>CSS3</span><small>INTERFACE</small>
+            </div>
+            <div class="stack-node stack-node-react" data-stack-node>
+              <span>REACT</span><small>UI LAYER</small>
+            </div>
+            <div class="stack-node stack-node-api" data-stack-node>
+              <span>REST API</span><small>INTEGRATION</small>
+            </div>
+            <div class="stack-node stack-node-node" data-stack-node>
+              <span>NODE.JS</span><small>BACK-END</small>
+            </div>
+            <div class="stack-node stack-node-mongo" data-stack-node>
+              <span>MONGODB</span><small>DATA</small>
+            </div>
+            <div class="stack-node stack-node-git" data-stack-node>
+              <span>GIT</span><small>VERSIONING</small>
+            </div>
+          </div>
 
-              <span class="about-stat-label"> FOCO PRINCIPAL </span>
+          <div class="tool-grid">
+            <article class="tool-card">
+              <span class="tool-index">01</span>
+              <strong>GITHUB</strong>
+              <small>REPOSITÓRIOS / WORKFLOW</small>
+            </article>
+            <article class="tool-card">
+              <span class="tool-index">02</span>
+              <strong>RESPONSIVE</strong>
+              <small>MOBILE-FIRST / ADAPTAÇÃO</small>
+            </article>
+            <article class="tool-card">
+              <span class="tool-index">03</span>
+              <strong>UI / UX</strong>
+              <small>INTERFACE / EXPERIÊNCIA</small>
+            </article>
+            <article class="tool-card">
+              <span class="tool-index">04</span>
+              <strong>VERCEL</strong>
+              <small>DEPLOY / WEB</small>
+            </article>
+            <article class="tool-card">
+              <span class="tool-index">05</span>
+              <strong>CLOUDFLARE</strong>
+              <small>DOMÍNIO / CONFIGURAÇÃO</small>
+            </article>
+            <article class="tool-card">
+              <span class="tool-index">06</span>
+              <strong>EXCEL</strong>
+              <small>INTERMEDIÁRIO</small>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+           04 / PROJETOS
+      ======================================================== -->
+      <section
+        class="projects-section portfolio-section"
+        id="projetos"
+        aria-labelledby="projects-title"
+      >
+        <div class="projects-grid-bg" aria-hidden="true"></div>
+
+        <div class="section-shell">
+          <div class="section-header projects-header">
+            <span class="section-index">&lt;04 / PROJECTS&gt;</span>
+            <span class="section-system">SELECTED.WORK</span>
+          </div>
+
+          <div class="section-heading-row projects-heading-row">
+            <div>
+              <p class="section-kicker">// PROJETOS SELECIONADOS</p>
+              <h2 class="section-title" id="projects-title">
+                CÓDIGO QUE VIROU<br /><span>INTERFACE.</span>
+              </h2>
+            </div>
+
+            <p class="section-lead">
+              Projetos acadêmicos e pessoais que consolidam Front-end,
+              responsividade, integração com APIs e fundamentos full-stack.
+            </p>
+          </div>
+
+          <div class="projects-list">
+            <article class="project-card" data-project-card>
+              <div class="project-info">
+                <div class="project-meta">
+                  <span>01 / FEATURED</span>
+                  <span>FEV — MAI 2025</span>
+                </div>
+
+                <h3>DISTRIBUIDORA<br />EAB</h3>
+                <p>
+                  Site institucional responsivo com catálogo de produtos,
+                  informações da empresa, integração com redes sociais e foco em
+                  UI/UX.
+                </p>
+
+                <div class="project-tags">
+                  <span>HTML</span><span>CSS</span><span>JAVASCRIPT</span>
+                  <span>VERCEL</span><span>CLOUDFLARE</span>
+                </div>
+
+                <a
+                  class="project-link"
+                  href="https://github.com/deV1niborges/projeto-distribuidora-eab"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  EXPLORAR NO GITHUB <span>↗</span>
+                </a>
+
+                <a
+                  class="project-link project-link-live"
+                  href="https://www.distribdeabltda.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  SITE ONLINE <span>↗</span>
+                </a>
+              </div>
+
+              <div
+                class="project-visual project-visual-eab"
+                aria-label="Representação visual abstrata do projeto Distribuidora EAB"
+              >
+                <div class="mock-browser">
+                  <div class="mock-browser-bar">
+                    <i></i><i></i><i></i><span>EAB / CATALOG</span>
+                  </div>
+                  <div class="eab-nav">
+                    <b>EAB</b><span>PRODUTOS</span><span>EMPRESA</span
+                    ><span>CONTATO</span>
+                  </div>
+                  <div class="eab-hero">
+                    <span>DISTRIBUIÇÃO</span
+                    ><strong>PRODUTOS<br />EM DESTAQUE</strong>
+                  </div>
+                  <div class="eab-products"><i></i><i></i><i></i></div>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="project-card project-card-reverse"
+              data-project-card
+            >
+              <div class="project-info">
+                <div class="project-meta">
+                  <span>02 / FULL-STACK</span>
+                  <span>FEV 2025</span>
+                </div>
+
+                <h3>PROJETO<br />SPOTIFY</h3>
+                <p>
+                  Aplicação web full-stack com React no Front-end, Node.js e
+                  APIs REST no Back-end e MongoDB para persistência de dados.
+                </p>
+
+                <div class="project-tags">
+                  <span>REACT</span><span>NODE.JS</span><span>REST API</span>
+                  <span>MONGODB</span>
+                </div>
+
+                <a
+                  class="project-link"
+                  href="https://github.com/deV1niborges/projeto-spotify"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  EXPLORAR NO GITHUB <span>↗</span>
+                </a>
+
+                <a
+                  class="project-link project-link-live"
+                  href="https://projeto-spotify-k0wm.onrender.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  SITE ONLINE <span>↗</span>
+                </a>
+              </div>
+
+              <div
+                class="project-visual project-visual-spotify"
+                aria-label="Representação visual abstrata do projeto Spotify"
+              >
+                <div class="music-shell">
+                  <div class="music-side">
+                    <b>VIBE</b><span>HOME</span><span>SEARCH</span
+                    ><span>LIBRARY</span>
+                  </div>
+                  <div class="music-main">
+                    <div class="music-cover"><span>PLAY</span></div>
+                    <div class="music-copy">
+                      <small>NOW PLAYING</small
+                      ><strong>FULL STACK<br />SESSION</strong>
+                    </div>
+                    <div class="music-wave">
+                      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                    </div>
+                    <div class="music-progress"><span></span></div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="project-card" data-project-card>
+              <div class="project-info">
+                <div class="project-meta">
+                  <span>03 / JAVASCRIPT</span>
+                  <span>OUTRO PROJETO</span>
+                </div>
+
+                <h3>QUIZ<br />JAVASCRIPT</h3>
+                <p>
+                  Quiz desenvolvido em JavaScript e disponível entre os projetos
+                  publicados no GitHub.
+                </p>
+
+                <div class="project-tags">
+                  <span>JAVASCRIPT</span><span>GITHUB</span>
+                </div>
+
+                <a
+                  class="project-link"
+                  href="https://github.com/deV1niborges/projeto-quiz"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  EXPLORAR NO GITHUB <span>↗</span>
+                </a>
+              </div>
+
+              <div
+                class="project-visual project-visual-quiz"
+                aria-label="Representação visual abstrata de um quiz em JavaScript"
+              >
+                <div class="quiz-window">
+                  <div class="quiz-top">
+                    <span>QUESTION_04</span><span>04 / 10</span>
+                  </div>
+                  <strong>QUAL MÉTODO<br />RETORNA UM ARRAY?</strong>
+                  <div class="quiz-options">
+                    <span>A / MAP()</span><span>B / QUERY()</span
+                    ><span>C / PUSHHTML()</span>
+                  </div>
+                  <div class="quiz-footer">
+                    <i></i><i></i><i class="active"></i><i></i><i></i>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="project-card project-card-reverse"
+              data-project-card
+            >
+              <div class="project-info">
+                <div class="project-meta">
+                  <span>04 / INTERFACE</span>
+                  <span>OUTRO PROJETO</span>
+                </div>
+
+                <h3>TELA DE<br />LOGIN</h3>
+                <p>
+                  Tela de Login publicada entre os outros projetos do GitHub,
+                  apresentada aqui como estudo de interface.
+                </p>
+
+                <div class="project-tags">
+                  <span>INTERFACE</span><span>GITHUB</span>
+                </div>
+
+                <a
+                  class="project-link"
+                  href="https://github.com/deV1niborges/projeto-login"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  EXPLORAR NO GITHUB <span>↗</span>
+                </a>
+              </div>
+
+              <div
+                class="project-visual project-visual-login"
+                aria-label="Representação visual abstrata de uma tela de login"
+              >
+                <div class="login-orbit"></div>
+                <div class="login-window">
+                  <span class="login-logo">VB_</span>
+                  <strong>ACCESS<br />ACCOUNT</strong>
+                  <div class="login-input"><span>EMAIL</span></div>
+                  <div class="login-input"><span>PASSWORD</span></div>
+                  <div class="login-button">ENTER SYSTEM →</div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+           05 / FORMAÇÃO
+      ======================================================== -->
+      <section
+        class="education-section portfolio-section"
+        id="formacao"
+        aria-labelledby="education-title"
+      >
+        <div class="section-shell">
+          <div class="section-header education-header">
+            <span class="section-index">&lt;05 / EDUCATION&gt;</span>
+            <span class="section-system">ACADEMIC.PATH</span>
+          </div>
+
+          <div class="education-layout">
+            <div class="education-copy">
+              <p class="section-kicker">// FORMAÇÃO ACADÊMICA</p>
+              <h2 class="section-title" id="education-title">
+                EVOLUÇÃO EM<br /><span>PROGRESSO.</span>
+              </h2>
+              <p class="section-lead education-lead">
+                Análise e Desenvolvimento de Sistemas na Descomplica Faculdade
+                Digital, com conclusão prevista para julho de 2027.
+              </p>
+            </div>
+
+            <div class="education-terminal">
+              <div class="education-terminal-head">
+                <span>EDUCATION.LOG</span>
+                <span class="education-live"><i></i> IN PROGRESS</span>
+              </div>
+
+              <div class="education-course">
+                <span class="education-course-code">ADS_2024_2027</span>
+                <h3>ANÁLISE E DESENVOLVIMENTO<br />DE SISTEMAS</h3>
+                <p>DESCOMPLICA FACULDADE DIGITAL</p>
+              </div>
+
+              <div class="education-dates">
+                <span>JAN / 2024</span>
+                <span>JUL / 2027</span>
+              </div>
+
+              <div class="education-track" aria-hidden="true">
+                <div class="education-track-line">
+                  <span class="education-progress"></span>
+                </div>
+                <span class="education-point education-point-start"></span>
+                <span class="education-point education-point-current"></span>
+                <span class="education-point education-point-end"></span>
+              </div>
+
+              <div class="education-progress-data">
+                <span>CURSO EM ANDAMENTO</span>
+                <strong id="education-progress-label">--%</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+           06 / CURSOS
+      ======================================================== -->
+      <section
+        class="courses-section portfolio-section"
+        id="cursos"
+        aria-labelledby="courses-title"
+      >
+        <div class="course-grid-bg" aria-hidden="true"></div>
+
+        <div class="section-shell">
+          <div class="section-header courses-header">
+            <span class="section-index">&lt;06 / LEARNING_LOG&gt;</span>
+            <span class="section-system">CERTIFICATES.INDEX</span>
+          </div>
+
+          <div class="courses-heading">
+            <p class="section-kicker">// APRENDIZADO CONTÍNUO</p>
+            <h2 class="section-title" id="courses-title">
+              CONHECIMENTO EM<br /><span>CONSTRUÇÃO.</span>
+            </h2>
+          </div>
+
+          <div class="learning-console">
+            <div class="console-head">
+              <div><i></i><i></i><i></i></div>
+              <span>learning_log.exe</span>
+              <span>7 RECORDS</span>
+            </div>
+
+            <div class="console-loading" aria-hidden="true">
+              <span>[LOADING CERTIFICATIONS...]</span>
+              <div><i class="console-loading-bar"></i></div>
+              <strong>100%</strong>
+            </div>
+
+            <div class="course-list">
+              <article class="course-row" data-course>
+                <span class="course-status">✓</span>
+                <span class="course-number">01</span>
+                <div>
+                  <strong>BASIC FRONT-END</strong><small>DESCOMPLICA</small>
+                </div>
+                <span class="course-type">FRONT-END</span>
+              </article>
+
+              <article class="course-row" data-course>
+                <span class="course-status">✓</span>
+                <span class="course-number">02</span>
+                <div><strong>PROGRAMMER</strong><small>DESCOMPLICA</small></div>
+                <span class="course-type">PROGRAMMING</span>
+              </article>
+
+              <article class="course-row" data-course>
+                <span class="course-status">✓</span>
+                <span class="course-number">03</span>
+                <div>
+                  <strong>HTML E CSS</strong><small>CURSO EM VÍDEO</small>
+                </div>
+                <span class="course-type">WEB</span>
+              </article>
+
+              <article class="course-row" data-course>
+                <span class="course-status">✓</span>
+                <span class="course-number">04</span>
+                <div>
+                  <strong>JAVASCRIPT</strong><small>CURSO EM VÍDEO</small>
+                </div>
+                <span class="course-type">LANGUAGE</span>
+              </article>
+
+              <article class="course-row" data-course>
+                <span class="course-status">✓</span>
+                <span class="course-number">05</span>
+                <div><strong>REACT</strong><small>UDEMY</small></div>
+                <span class="course-type">LIBRARY</span>
+              </article>
+
+              <article class="course-row" data-course>
+                <span class="course-status">✓</span>
+                <span class="course-number">06</span>
+                <div>
+                  <strong>JORNADA FULL STACK</strong
+                  ><small>HASHTAG PROGRAMAÇÃO</small>
+                </div>
+                <span class="course-type">FULL-STACK</span>
+              </article>
+
+              <article class="course-row" data-course>
+                <span class="course-status">✓</span>
+                <span class="course-number">07</span>
+                <div>
+                  <strong>MINI EXCEL</strong><small>ESTAGIÁRIO SÊNIOR</small>
+                </div>
+                <span class="course-type">PRODUCTIVITY</span>
+              </article>
+            </div>
+
+            <div class="console-footer">
+              <span>&gt; 7 records found.</span>
+              <span>STATUS: COMPLETE_</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+           07 / CONTATO
+      ======================================================== -->
+      <section
+        class="contact-section portfolio-section"
+        id="contato"
+        aria-labelledby="contact-title"
+      >
+        <div class="contact-radar" aria-hidden="true">
+          <span></span><span></span><span></span><i></i>
+        </div>
+
+        <div class="section-shell contact-shell">
+          <div class="section-header contact-header">
+            <span class="section-index">&lt;07 / CONTACT&gt;</span>
+            <span class="section-system">CHANNEL.OPEN</span>
+          </div>
+
+          <div class="contact-main">
+            <p class="section-kicker">// OPORTUNIDADES FRONT-END</p>
+
+            <h2 class="contact-title" id="contact-title">
+              VAMOS CRIAR<br />ALGO <span>JUNTOS?</span>
+            </h2>
+
+            <p class="contact-copy">
+              Estou construindo minha carreira em Front-end e buscando
+              oportunidades de estágio na área de desenvolvimento.
+            </p>
+
+            <a class="contact-email" href="mailto:vinicius.borges2@icloud.com">
+              <span>vinicius.borges2@icloud.com</span>
+              <i>↗</i>
+            </a>
+
+            <div class="contact-actions">
+              <a
+                href="https://linkedin.com/in/dev1niborges"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>LINKEDIN</span><i>↗</i>
+              </a>
+              <a
+                href="https://github.com/deV1niborges"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>GITHUB</span><i>↗</i>
+              </a>
+              <a
+                href="./assets/curriculo-vinicius-borges.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>CURRÍCULO</span><i>↗</i>
+              </a>
+            </div>
+          </div>
+
+          <div class="contact-bottom">
+            <div>
+              <span class="contact-label">LOCATION</span>
+              <strong>MINAS GERAIS // BR</strong>
+            </div>
+            <div>
+              <span class="contact-label">FOCUS</span>
+              <strong>FRONT-END INTERNSHIP</strong>
+            </div>
+            <div>
+              <span class="contact-label">STATUS</span>
+              <strong class="contact-online"><i></i> AVAILABLE</strong>
             </div>
           </div>
         </div>
       </section>
     </main>
-    <canvas id="webgl"></canvas>
 
-    <script type="module" defer src="script.js"></script>
+    <!-- =========================================================
+         FOOTER
+    ========================================================== -->
+    <footer class="site-footer">
+      <div class="footer-grid" aria-hidden="true"></div>
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span>[ V ]</span>
+          <strong>VINICIUS BORGES</strong>
+        </div>
+
+        <p>DESIGNED & CODED WITH HTML / CSS / JAVASCRIPT / THREE.JS / GSAP</p>
+
+        <a href="#home" class="back-top">BACK TO TOP ↑</a>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© <span id="current-year">2026</span> VINICIUS BORGES</span>
+        <span>PORTFOLIO_SYSTEM // ONLINE</span>
+      </div>
+    </footer>
+
+    <script type="module" src="script.js"></script>
   </body>
 </html>

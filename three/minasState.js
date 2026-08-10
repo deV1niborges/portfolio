@@ -220,7 +220,15 @@ function createEmptyHighlight() {
 
 export async function createMinasStateHighlight() {
   try {
-    const response = await fetch(MG_GEOJSON_URL);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3500);
+
+    const response = await fetch(MG_GEOJSON_URL, {
+      signal: controller.signal,
+      cache: "force-cache",
+    });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`IBGE respondeu ${response.status}`);

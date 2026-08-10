@@ -26,13 +26,20 @@ function initNavigation() {
     toggle.setAttribute("aria-label", open ? "Fechar menu" : "Abrir menu");
   });
 
+  const closeMenu = () => {
+    nav.classList.remove("menu-open");
+    toggle?.setAttribute("aria-expanded", "false");
+    toggle?.setAttribute("aria-label", "Abrir menu");
+  };
+
   links.forEach((link) => {
-    link.addEventListener("click", () => {
-      nav.classList.remove("menu-open");
-      toggle?.setAttribute("aria-expanded", "false");
-      toggle?.setAttribute("aria-label", "Abrir menu");
-    });
+    link.addEventListener("click", closeMenu);
   });
+
+  // Evita o menu ficar preso aberto ao girar o celular ou voltar ao desktop.
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 980) closeMenu();
+  }, { passive: true });
 
   sections.forEach((section) => {
     ScrollTrigger.create({
@@ -293,6 +300,18 @@ export function initPortfolioAnimations() {
 
   const year = document.querySelector("#current-year");
   if (year) year.textContent = String(new Date().getFullYear());
+
+  const refreshScrollTriggers = () => {
+    window.clearTimeout(refreshScrollTriggers.timer);
+    refreshScrollTriggers.timer = window.setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 140);
+  };
+
+  // Fontes e barras móveis podem mudar a altura útil depois do primeiro paint.
+  document.fonts?.ready.then(() => ScrollTrigger.refresh());
+  window.addEventListener("orientationchange", refreshScrollTriggers, { passive: true });
+  window.visualViewport?.addEventListener("resize", refreshScrollTriggers, { passive: true });
 
   requestAnimationFrame(() => ScrollTrigger.refresh());
 }

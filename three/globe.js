@@ -24,7 +24,7 @@ export function createGlobe() {
   const baseMaterial = new THREE.MeshBasicMaterial({
     color: GLOBE_COLOR_DIM,
     transparent: true,
-    opacity: 0.06,
+    opacity: 0.045,
     blending: THREE.AdditiveBlending,
     depthWrite: false,
   });
@@ -39,7 +39,7 @@ export function createGlobe() {
     color: GLOBE_COLOR,
     wireframe: true,
     transparent: true,
-    opacity: 0.25,
+    opacity: 0.22,
     blending: THREE.AdditiveBlending,
     depthWrite: false,
   });
@@ -54,7 +54,7 @@ export function createGlobe() {
     map: createContinentsTexture(),
     color: GLOBE_COLOR,
     transparent: true,
-    opacity: 0.9,
+    opacity: 0.68,
     blending: THREE.AdditiveBlending,
     depthWrite: false,
   });
@@ -155,7 +155,7 @@ function createDigitalParticles() {
   const material = new THREE.PointsMaterial({
     map: squareTexture,
     color: GLOBE_COLOR,
-    size: 0.03,
+    size: 0.028,
     transparent: true,
     opacity: 0,
     blending: THREE.AdditiveBlending,

@@ -1,73 +1,234 @@
-import * as THREE from 'three';
-import { createSceneContext } from './three/scene.js';
-import { createGlobe, createHorizonLine } from './three/globe.js';
-import { createMarker } from './three/marker.js';
-import { createPostFX } from './three/postFX.js';
-import { createIntroTimeline } from './three/hologramAnimation.js';
-import { ROTATION_SPEED, GLOW_INTENSITY } from './three/constants.js';
+import * as THREE from "three";
 
-const canvas = document.getElementById('webgl');
-const { scene, camera, renderer, getRenderSize } = createSceneContext(canvas);
+import { createSceneContext } from "./three/scene.js";
 
-// --- Monta a cena ---
+import { createGlobe, createHorizonLine } from "./three/globe.js";
+
+import { createMarker } from "./three/marker.js";
+
+import { createMinasStateHighlight } from "./three/minasState.js";
+
+import { createPostFX } from "./three/postFX.js";
+
+import { createIntroTimeline } from "./three/hologramAnimation.js";
+
+import { updateResponsiveIntroLayout } from "./three/responsive.js";
+
+import { createWelcomeTimeline } from "./animations/welcomeAnimation.js";
+
+import { createHeroTimeline } from "./animations/heroAnimation.js";
+
+import { initAboutAnimation } from "./animations/aboutAnimation.js";
+
+// ============================================================
+// CANVAS / SCENE
+// ============================================================
+
+const canvas = document.getElementById("webgl");
+
+const {
+  scene,
+
+  camera,
+
+  renderer,
+
+  getRenderSize,
+
+  onResize,
+} = createSceneContext(canvas);
+
+// ============================================================
+// ROOT RESPONSIVO
+// ============================================================
+
+const introRoot = new THREE.Group();
+
+scene.add(introRoot);
+
+// ============================================================
+// GLOBO
+// ============================================================
+
 const globe = createGlobe();
-scene.add(globe.group);
+
+introRoot.add(globe.group);
+
+// ============================================================
+// MARCADOR\n// ============================================================
 
 const marker = createMarker();
-globe.group.add(marker.group); // filho do globo: gira junto com ele automaticamente
+
+globe.group.add(marker.group);
+
+// ============================================================
+// MINAS GERAIS
+// ============================================================
+
+// Carrega o contorno real do estado.
+//
+// Se a API não responder,
+// a intro continua normalmente.
+
+const minasState = await createMinasStateHighlight();
+
+globe.group.add(minasState.group);
+
+// ============================================================
+// LINHA DE PROJEÇÃO
+// ============================================================
 
 const horizonLine = createHorizonLine();
-scene.add(horizonLine);
 
-const { width, height } = getRenderSize();
-const postFX = createPostFX(renderer, width, height);
+introRoot.add(horizonLine);
 
-window.addEventListener('resize', () => {
-  const size = getRenderSize();
-  postFX.setSize(size.width, size.height);
+// ============================================================
+// POST FX
+// ============================================================
+
+const initialSize = getRenderSize();
+
+const postFX = createPostFX(
+  renderer,
+
+  initialSize.width,
+
+  initialSize.height,
+);
+
+// ============================================================
+// RESPONSIVIDADE
+// ============================================================
+
+onResize((size) => {
+  postFX.setSize(
+    size.width,
+
+    size.height,
+  );
+
+  updateResponsiveIntroLayout({
+    camera,
+
+    introRoot,
+
+    marker,
+
+    viewportWidth: size.viewportWidth,
+
+    viewportHeight: size.viewportHeight,
+  });
 });
 
-// --- Acessibilidade: prefers-reduced-motion ---
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// ============================================================
+// ACESSIBILIDADE
+// ============================================================
 
-// --- Loop de render ---
+const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+// ============================================================
+// RENDER LOOP
+// ============================================================
+
 const clock = new THREE.Clock();
-let introFinished = false;
+
+let introComplete = false;
+
+let animationFrameId = null;
 
 function animate() {
-  requestAnimationFrame(animate);
-  const delta = clock.getDelta();
+  animationFrameId = requestAnimationFrame(animate);
+
   const elapsed = clock.getElapsedTime();
 
-  // Rotação contínua e sutil, mantendo o holograma "vivo" depois da intro.
-  if (introFinished) {
-    globe.group.rotation.y += ROTATION_SPEED * delta;
+  if (!introComplete) {
+    globe.particles.rotation.y = elapsed * 0.025;
+
+    globe.particles.rotation.x = Math.sin(elapsed * 0.35) * 0.012;
   }
 
-  postFX.render(scene, camera, elapsed);
+  postFX.render(
+    scene,
+
+    camera,
+
+    elapsed,
+  );
 }
+
+// ============================================================
+// INTRO COMPLETA
+// ============================================================
 
 function onIntroComplete() {
-  introFinished = true;
-  // Evento simples pra quem for construir a próxima etapa (texto de
-  // boas-vindas, etc) saber que pode começar.
-  window.dispatchEvent(new CustomEvent('introComplete'));
-}
+  if (introComplete) {
+    return;
+  }
 
-if (prefersReducedMotion) {
-  // Pula a coreografia inteira: os materiais do globo já nascem com
-  // opacidades "formadas" (definidas em three/globe.js), então só
-  // precisamos garantir a escala e ligar o glow e o marcador — sem
-  // nenhuma das animações de projeção/rotação/zoom/glitch.
-  globe.group.scale.set(1, 1, 1);
-  globe.glowSphere.material.uniforms.uIntensity.value = GLOW_INTENSITY;
-  marker.dot.material.opacity = 1;
-  marker.glow.material.opacity = 0.6;
-  setTimeout(onIntroComplete, 400);
-} else {
-  createIntroTimeline({
-    globe, marker, camera, postFX, horizonLine, onComplete: onIntroComplete,
+  introComplete = true;
+
+  document.documentElement.classList.add("intro-complete");
+
+  window.dispatchEvent(new CustomEvent("introComplete"));
+
+  // ============================================================
+  // PARA O THREE.JS
+  // ============================================================
+
+  requestAnimationFrame(() => {
+    if (animationFrameId !== null) {
+      cancelAnimationFrame(animationFrameId);
+    }
+
+    animationFrameId = null;
+
+    // ========================================================
+    // COMEÇA O "BEM-VINDO"
+    // ========================================================
+
+    createWelcomeTimeline({
+      onComplete() {
+        createHeroTimeline();
+
+        initAboutAnimation();
+      },
+    });
   });
-}
+  // ============================================================
+  // REDUCED MOTION
+  // ============================================================
 
-animate();
+  if (motionPreference.matches) {
+    postFX.uniforms.uOpacity.value = 0;
+
+    canvas.setAttribute(
+      "aria-hidden",
+
+      "true",
+    );
+
+    requestAnimationFrame(onIntroComplete);
+  } else {
+    createIntroTimeline({
+      globe,
+
+      marker,
+
+      minasState,
+
+      camera,
+
+      postFX,
+
+      horizonLine,
+
+      onComplete: onIntroComplete,
+    });
+  }
+
+  // ============================================================
+  // START
+  // ============================================================
+
+  animate();
+}

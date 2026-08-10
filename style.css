@@ -9,23 +9,1722 @@
 html,
 body {
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   background: #000;
   overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 #webgl {
   position: fixed;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   display: block;
+  background: #000;
+  touch-action: none;
 
-  /* O canvas é renderizado internamente numa resolução BEM menor que
-     o tamanho real da tela (ver PIXEL_SIZE em three/constants.js).
-     Essa regra impede o navegador de suavizar a imagem ao ampliá-la
-     de volta pro tamanho da tela — é isso que cria os "blocos"
-     visíveis do efeito pixelado. */
+  /* O render interno é menor e volta a ocupar a tela sem suavização. */
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
+}
+
+/* Quando a intro acabar o canvas já está preto/transparente. Tiramos ele
+   da interação para a próxima camada HTML do portfólio ficar livre. */
+.intro-complete #webgl {
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #webgl {
+    visibility: hidden;
+  }
+}
+
+/* ============================================================
+   WELCOME SCREEN
+============================================================ */
+
+.welcome-screen {
+  position: fixed;
+  inset: 0;
+
+  z-index: 20;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  background: #02040a;
+
+  opacity: 0;
+  visibility: hidden;
+
+  pointer-events: none;
+}
+
+/* ============================================================
+   CONTEÚDO
+============================================================ */
+
+.welcome-content {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  width: min(90vw, 1100px);
+
+  text-align: center;
+}
+
+/* ============================================================
+   TÍTULO
+============================================================ */
+
+.welcome-title-wrapper {
+  position: relative;
+
+  overflow: hidden;
+
+  padding: 0.1em 0.08em;
+}
+
+.welcome-title {
+  position: relative;
+
+  margin: 0;
+
+  font-family: "Pixelify Sans", monospace;
+
+  font-size: clamp(2.8rem, 8vw, 7.8rem);
+
+  font-weight: 600;
+
+  line-height: 0.95;
+
+  letter-spacing: clamp(0.02em, 0.7vw, 0.09em);
+
+  color: #9af7ff;
+
+  text-shadow:
+    0 0 4px rgba(53, 230, 255, 0.7),
+    0 0 16px rgba(53, 230, 255, 0.28);
+
+  white-space: nowrap;
+}
+
+/* Cada letra criada pelo JS */
+
+.welcome-letter {
+  display: inline-block;
+
+  opacity: 0;
+
+  transform: translateY(110%);
+}
+
+/* ============================================================
+   GLITCH
+============================================================ */
+
+.welcome-title-glitch {
+  position: absolute;
+
+  inset: 0;
+
+  display: flex;
+  justify-content: center;
+
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+.welcome-title-glitch-a {
+  color: #35e6ff;
+
+  text-shadow: 3px 0 #35e6ff;
+}
+
+.welcome-title-glitch-b {
+  color: #ff2d2d;
+
+  text-shadow: -3px 0 #ff2d2d;
+}
+
+/* ============================================================
+   LINHA CENTRAL
+============================================================ */
+
+.welcome-divider {
+  width: min(430px, 65vw);
+  height: 2px;
+
+  margin-top: clamp(18px, 3vw, 32px);
+
+  background: linear-gradient(90deg, transparent, #35e6ff, transparent);
+
+  transform: scaleX(0);
+
+  transform-origin: center;
+
+  opacity: 0;
+
+  box-shadow: 0 0 10px rgba(53, 230, 255, 0.5);
+}
+
+/* ============================================================
+   SUBTÍTULO
+============================================================ */
+
+.welcome-subtitle {
+  margin: clamp(14px, 2vw, 22px) 0 0;
+
+  font-family: "Pixelify Sans", monospace;
+
+  font-size: clamp(1rem, 2.2vw, 1.65rem);
+
+  font-weight: 400;
+
+  letter-spacing: clamp(0.13em, 0.8vw, 0.3em);
+
+  color: rgba(154, 247, 255, 0.72);
+
+  opacity: 0;
+
+  transform: translateY(14px);
+
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   SCANLINE
+============================================================ */
+
+.welcome-scanline {
+  position: absolute;
+
+  left: 0;
+
+  top: -10%;
+
+  width: 100%;
+
+  height: 3px;
+
+  opacity: 0;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(53, 230, 255, 0.9),
+    transparent
+  );
+
+  box-shadow:
+    0 0 10px rgba(53, 230, 255, 0.7),
+    0 0 30px rgba(53, 230, 255, 0.22);
+
+  pointer-events: none;
+}
+
+/* ============================================================
+   PIXELS DECORATIVOS
+============================================================ */
+
+.welcome-pixels {
+  position: absolute;
+
+  inset: -60px;
+
+  pointer-events: none;
+}
+
+.welcome-pixels span {
+  position: absolute;
+
+  width: 5px;
+  height: 5px;
+
+  background: #35e6ff;
+
+  opacity: 0;
+
+  box-shadow: 0 0 8px rgba(53, 230, 255, 0.7);
+}
+
+.welcome-pixels span:nth-child(1) {
+  left: 8%;
+  top: 28%;
+}
+
+.welcome-pixels span:nth-child(2) {
+  right: 10%;
+  top: 18%;
+}
+
+.welcome-pixels span:nth-child(3) {
+  left: 17%;
+  bottom: 22%;
+}
+
+.welcome-pixels span:nth-child(4) {
+  right: 15%;
+  bottom: 30%;
+}
+
+.welcome-pixels span:nth-child(5) {
+  left: 50%;
+  top: -5%;
+}
+
+/* ============================================================
+   TEXTURA DIGITAL MUITO SUTIL
+============================================================ */
+
+.welcome-noise {
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  opacity: 0.055;
+
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(53, 230, 255, 0.12) 4px
+  );
+}
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media (max-width: 600px) {
+  .welcome-content {
+    width: 94vw;
+  }
+
+  .welcome-title {
+    font-size: clamp(2.2rem, 12vw, 4rem);
+
+    letter-spacing: 0.01em;
+  }
+
+  .welcome-divider {
+    width: 58vw;
+  }
+
+  .welcome-subtitle {
+    font-size: clamp(0.85rem, 4.6vw, 1.2rem);
+
+    letter-spacing: 0.14em;
+  }
+
+  .welcome-pixels {
+    inset: -20px;
+  }
+}
+
+/* ============================================================
+   CELULARES MUITO PEQUENOS
+============================================================ */
+
+@media (max-width: 360px) {
+  .welcome-title {
+    font-size: 2rem;
+  }
+
+  .welcome-subtitle {
+    font-size: 0.82rem;
+
+    letter-spacing: 0.1em;
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome-letter {
+    opacity: 1;
+
+    transform: none;
+  }
+}
+
+/* ============================================================
+   PORTFOLIO
+============================================================ */
+
+.portfolio-content {
+  position: relative;
+
+  background: #02040a;
+
+  color: #9af7ff;
+}
+
+/* ============================================================
+   HERO
+============================================================ */
+
+.hero {
+  position: relative;
+
+  min-height: 100svh;
+
+  overflow: hidden;
+
+  display: flex;
+
+  align-items: center;
+
+  background:
+    radial-gradient(
+      circle at 75% 45%,
+      rgba(53, 230, 255, 0.07),
+      transparent 35%
+    ),
+    #02040a;
+}
+
+/* ============================================================
+   GRID DE FUNDO
+============================================================ */
+
+.hero-grid {
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  opacity: 0.12;
+
+  background-image:
+    linear-gradient(rgba(53, 230, 255, 0.11) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(53, 230, 255, 0.11) 1px, transparent 1px);
+
+  background-size: 55px 55px;
+
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 25%,
+    black 75%,
+    transparent
+  );
+}
+
+/* ============================================================
+   SCANNER
+============================================================ */
+
+.hero-scan {
+  position: absolute;
+
+  left: 0;
+
+  top: -5%;
+
+  width: 100%;
+
+  height: 1px;
+
+  opacity: 0;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(53, 230, 255, 0.65),
+    transparent
+  );
+
+  box-shadow: 0 0 16px rgba(53, 230, 255, 0.5);
+
+  pointer-events: none;
+}
+
+/* ============================================================
+   CONTAINER
+============================================================ */
+
+.hero-container {
+  position: relative;
+
+  z-index: 2;
+
+  width: min(1400px, calc(100% - 96px));
+
+  min-height: min(900px, calc(100svh - 60px));
+
+  margin: 0 auto;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: space-between;
+
+  padding: clamp(30px, 5vh, 60px) 0;
+}
+
+/* ============================================================
+   TOP
+============================================================ */
+
+.hero-top {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 30px;
+
+  font-family: "Pixelify Sans", monospace;
+
+  font-size: 0.86rem;
+
+  letter-spacing: 0.12em;
+}
+
+.section-index {
+  color: rgba(154, 247, 255, 0.52);
+}
+
+.hero-status {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  color: rgba(154, 247, 255, 0.65);
+}
+
+.status-dot {
+  width: 7px;
+
+  height: 7px;
+
+  background: #ff2d2d;
+
+  box-shadow: 0 0 10px rgba(255, 45, 45, 0.8);
+}
+
+/* ============================================================
+   HERO CONTENT
+============================================================ */
+
+.hero-content {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.35fr)
+    minmax(300px, 0.65fr);
+
+  align-items: center;
+
+  gap: clamp(50px, 7vw, 120px);
+
+  margin: clamp(70px, 10vh, 130px) 0;
+}
+
+/* ============================================================
+   EYEBROW
+============================================================ */
+
+.hero-eyebrow {
+  margin: 0 0 18px;
+
+  font-family: "Pixelify Sans", monospace;
+
+  color: rgba(53, 230, 255, 0.55);
+
+  letter-spacing: 0.18em;
+
+  font-size: clamp(0.75rem, 1vw, 0.9rem);
+}
+
+/* ============================================================
+   NOME
+============================================================ */
+
+.hero-name {
+  display: flex;
+
+  flex-direction: column;
+
+  margin: 0;
+
+  font-family: "Pixelify Sans", monospace;
+
+  font-size: clamp(4rem, 10vw, 9rem);
+
+  font-weight: 600;
+
+  line-height: 0.74;
+
+  letter-spacing: -0.035em;
+
+  color: #d9fcff;
+}
+
+.hero-name-line {
+  display: block;
+
+  width: fit-content;
+
+  opacity: 0;
+}
+
+.hero-name-accent {
+  color: transparent;
+
+  -webkit-text-stroke: 1px rgba(53, 230, 255, 0.75);
+
+  text-shadow: 0 0 24px rgba(53, 230, 255, 0.1);
+}
+
+/* ============================================================
+   ROLE
+============================================================ */
+
+.hero-role {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  margin-top: clamp(35px, 5vw, 58px);
+
+  font-family: "Pixelify Sans", monospace;
+
+  font-size: clamp(1.15rem, 2vw, 1.85rem);
+
+  color: #35e6ff;
+
+  letter-spacing: 0.07em;
+
+  opacity: 0;
+}
+
+.hero-role-arrow {
+  color: #ff2d2d;
+}
+
+/* ============================================================
+   CURSOR
+============================================================ */
+
+.hero-cursor {
+  width: 11px;
+
+  height: 1em;
+
+  display: inline-block;
+
+  background: #35e6ff;
+
+  box-shadow: 0 0 10px rgba(53, 230, 255, 0.6);
+}
+
+/* ============================================================
+   DESCRIÇÃO
+============================================================ */
+
+.hero-description {
+  width: min(600px, 100%);
+
+  margin: clamp(25px, 4vw, 38px) 0 0;
+
+  font-family: "Pixelify Sans", monospace;
+
+  font-size: clamp(1rem, 1.35vw, 1.15rem);
+
+  line-height: 1.6;
+
+  color: rgba(217, 252, 255, 0.6);
+
+  opacity: 0;
+}
+
+/* ============================================================
+   BOTÕES
+============================================================ */
+
+.hero-actions {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 14px;
+
+  margin-top: 34px;
+
+  opacity: 0;
+}
+
+.hero-button {
+  position: relative;
+
+  min-width: 175px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 35px;
+
+  padding: 14px 18px;
+
+  border: 1px solid rgba(53, 230, 255, 0.4);
+
+  text-decoration: none;
+
+  font-family: "Pixelify Sans", monospace;
+
+  font-size: 0.9rem;
+
+  letter-spacing: 0.08em;
+
+  overflow: hidden;
+
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease,
+    background 0.25s ease,
+    transform 0.25s ease;
+}
+
+.hero-button-primary {
+  background: #35e6ff;
+
+  color: #02040a;
+
+  border-color: #35e6ff;
+}
+
+.hero-button-secondary {
+  color: #9af7ff;
+
+  background: rgba(53, 230, 255, 0.025);
+}
+
+.hero-button:hover {
+  transform: translateY(-3px);
+}
+
+.hero-button-primary:hover {
+  background: #9af7ff;
+}
+
+.hero-button-secondary:hover {
+  border-color: #35e6ff;
+
+  background: rgba(53, 230, 255, 0.08);
+}
+
+/* ============================================================
+   TERMINAL
+============================================================ */
+
+.hero-terminal {
+  position: relative;
+
+  border: 1px solid rgba(53, 230, 255, 0.22);
+
+  background: rgba(4, 15, 22, 0.56);
+
+  backdrop-filter: blur(10px);
+
+  font-family: "Pixelify Sans", monospace;
+
+  opacity: 0;
+
+  transform: translateX(40px);
+}
+
+.hero-terminal::before,
+.hero-terminal::after {
+  content: "";
+
+  position: absolute;
+
+  width: 12px;
+
+  height: 12px;
+}
+
+.hero-terminal::before {
+  top: -1px;
+
+  left: -1px;
+
+  border-top: 2px solid #35e6ff;
+
+  border-left: 2px solid #35e6ff;
+}
+
+.hero-terminal::after {
+  right: -1px;
+
+  bottom: -1px;
+
+  border-right: 2px solid #35e6ff;
+
+  border-bottom: 2px solid #35e6ff;
+}
+
+/* ============================================================
+   TERMINAL HEADER
+============================================================ */
+
+.terminal-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding: 13px 16px;
+
+  border-bottom: 1px solid rgba(53, 230, 255, 0.15);
+
+  color: rgba(154, 247, 255, 0.5);
+
+  font-size: 0.72rem;
+
+  letter-spacing: 0.12em;
+}
+
+.terminal-dots {
+  display: flex;
+
+  gap: 6px;
+}
+
+.terminal-dots span {
+  width: 5px;
+
+  height: 5px;
+
+  background: rgba(53, 230, 255, 0.5);
+}
+
+.terminal-dots span:first-child {
+  background: #ff2d2d;
+}
+
+/* ============================================================
+   TERMINAL BODY
+============================================================ */
+
+.terminal-body {
+  padding: clamp(22px, 3vw, 36px);
+}
+
+.terminal-row {
+  display: grid;
+
+  grid-template-columns: 95px 1fr;
+
+  gap: 15px;
+
+  padding: 12px 0;
+
+  border-bottom: 1px dashed rgba(53, 230, 255, 0.12);
+}
+
+.terminal-row span {
+  color: rgba(154, 247, 255, 0.37);
+
+  font-size: 0.72rem;
+}
+
+.terminal-row strong {
+  color: rgba(217, 252, 255, 0.82);
+
+  font-size: 0.84rem;
+
+  font-weight: 500;
+}
+
+.terminal-divider {
+  margin: 28px 0 15px;
+
+  height: 1px;
+
+  background: linear-gradient(90deg, #35e6ff, transparent);
+
+  opacity: 0.3;
+}
+
+/* ============================================================
+   PROGRESS
+============================================================ */
+
+.terminal-loading {
+  display: flex;
+
+  justify-content: space-between;
+
+  margin-bottom: 8px;
+
+  color: rgba(154, 247, 255, 0.5);
+
+  font-size: 0.67rem;
+}
+
+.terminal-progress {
+  width: 100%;
+
+  height: 3px;
+
+  background: rgba(53, 230, 255, 0.08);
+
+  overflow: hidden;
+}
+
+.terminal-progress-bar {
+  width: 100%;
+
+  height: 100%;
+
+  background: #35e6ff;
+
+  transform: scaleX(0);
+
+  transform-origin: left;
+
+  box-shadow: 0 0 8px rgba(53, 230, 255, 0.7);
+}
+
+/* ============================================================
+   TERMINAL FOOTER
+============================================================ */
+
+.terminal-footer {
+  display: flex;
+
+  justify-content: space-between;
+
+  padding: 11px 16px;
+
+  border-top: 1px solid rgba(53, 230, 255, 0.12);
+
+  color: rgba(154, 247, 255, 0.32);
+
+  font-size: 0.62rem;
+
+  letter-spacing: 0.1em;
+}
+
+/* ============================================================
+   HERO BOTTOM
+============================================================ */
+
+.hero-bottom {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 25px;
+
+  font-family: "Pixelify Sans", monospace;
+
+  font-size: 0.72rem;
+
+  letter-spacing: 0.12em;
+
+  opacity: 0;
+}
+
+.hero-social,
+.hero-scroll {
+  color: rgba(154, 247, 255, 0.5);
+
+  text-decoration: none;
+
+  transition: color 0.2s ease;
+}
+
+.hero-social:hover,
+.hero-scroll:hover {
+  color: #35e6ff;
+}
+
+.hero-scroll {
+  display: flex;
+
+  gap: 10px;
+
+  align-items: center;
+}
+
+.hero-location {
+  color: rgba(154, 247, 255, 0.25);
+}
+
+/* ============================================================
+   TABLET
+============================================================ */
+
+@media (max-width: 1000px) {
+  .hero-container {
+    width: min(100% - 50px, 900px);
+  }
+
+  .hero-content {
+    grid-template-columns: 1fr;
+
+    gap: 60px;
+  }
+
+  .hero-terminal {
+    width: min(600px, 100%);
+  }
+
+  .hero-name {
+    font-size: clamp(4.5rem, 15vw, 8rem);
+  }
+}
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media (max-width: 600px) {
+  .hero {
+    min-height: auto;
+  }
+
+  .hero-container {
+    width: calc(100% - 32px);
+
+    min-height: auto;
+
+    padding: 28px 0 35px;
+  }
+
+  .hero-top {
+    align-items: flex-start;
+
+    font-size: 0.62rem;
+  }
+
+  .hero-status {
+    max-width: 150px;
+
+    justify-content: flex-end;
+
+    text-align: right;
+  }
+
+  .hero-content {
+    margin: 90px 0 70px;
+
+    gap: 55px;
+  }
+
+  .hero-name {
+    font-size: clamp(3.5rem, 20vw, 5.7rem);
+
+    line-height: 0.78;
+  }
+
+  .hero-role {
+    font-size: 1rem;
+
+    letter-spacing: 0.03em;
+  }
+
+  .hero-description {
+    font-size: 0.95rem;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .hero-button {
+    width: 100%;
+  }
+
+  .terminal-row {
+    grid-template-columns: 85px 1fr;
+  }
+
+  .hero-bottom {
+    align-items: flex-end;
+  }
+
+  .hero-location {
+    display: none;
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-name-line,
+  .hero-role,
+  .hero-description,
+  .hero-actions,
+  .hero-terminal,
+  .hero-bottom {
+    opacity: 1;
+
+    transform: none;
+  }
+
+  .terminal-progress-bar {
+    transform: scaleX(1);
+  }
+}
+
+/* ============================================================
+   ABOUT
+============================================================ */
+
+.about {
+  position: relative;
+
+  min-height: 100svh;
+
+  overflow: hidden;
+
+  padding: clamp(90px, 12vw, 160px) 0;
+
+  background:
+    radial-gradient(
+      circle at 15% 50%,
+      rgba(53, 230, 255, 0.06),
+      transparent 35%
+    ),
+    #02040a;
+
+  border-top: 1px solid rgba(53, 230, 255, 0.08);
+}
+
+/* ============================================================
+   GRID
+============================================================ */
+
+.about-grid {
+  position: absolute;
+
+  inset: 0;
+
+  opacity: 0.08;
+
+  pointer-events: none;
+
+  background-image:
+    linear-gradient(rgba(53, 230, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(53, 230, 255, 0.1) 1px, transparent 1px);
+
+  background-size: 55px 55px;
+
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 20%,
+    black 80%,
+    transparent
+  );
+}
+
+/* ============================================================
+   CONTAINER
+============================================================ */
+
+.about-container {
+  position: relative;
+
+  z-index: 2;
+
+  width: min(1400px, calc(100% - 96px));
+
+  margin: 0 auto;
+}
+
+/* ============================================================
+   SECTION HEADER
+============================================================ */
+
+.section-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 30px;
+
+  margin-bottom: clamp(70px, 10vw, 120px);
+
+  font-family: "Pixelify Sans", monospace;
+
+  font-size: 0.78rem;
+
+  letter-spacing: 0.13em;
+}
+
+.section-system {
+  color: rgba(154, 247, 255, 0.28);
+}
+
+/* ============================================================
+   CONTENT
+============================================================ */
+
+.about-content {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(380px, 0.8fr);
+
+  gap: clamp(60px, 9vw, 150px);
+
+  align-items: center;
+}
+
+/* ============================================================
+   LABEL
+============================================================ */
+
+.about-label {
+  margin: 0 0 22px;
+
+  font-family: "Pixelify Sans", monospace;
+
+  font-size: 0.78rem;
+
+  letter-spacing: 0.2em;
+
+  color: rgba(53, 230, 255, 0.45);
+}
+
+/* ============================================================
+   TÍTULO
+============================================================ */
+
+.about-title {
+  max-width: 750px;
+
+  margin: 0 0 clamp(35px, 5vw, 60px);
+
+  font-family: "Pixelify Sans", monospace;
+
+  font-size: clamp(3rem, 6.5vw, 6.8rem);
+
+  line-height: 0.9;
+
+  font-weight: 600;
+
+  letter-spacing: -0.035em;
+
+  color: #d9fcff;
+}
+
+.about-title span {
+  display: inline-block;
+
+  color: transparent;
+
+  -webkit-text-stroke: 1px #35e6ff;
+
+  text-shadow: 0 0 18px rgba(53, 230, 255, 0.14);
+}
+
+/* ============================================================
+   TEXTO
+============================================================ */
+
+.about-text {
+  max-width: 660px;
+
+  margin: 0 0 18px;
+
+  font-family: "Pixelify Sans", monospace;
+
+  font-size: clamp(1rem, 1.35vw, 1.15rem);
+
+  line-height: 1.65;
+
+  color: rgba(217, 252, 255, 0.56);
+}
+
+/* ============================================================
+   PROFILE CARD
+============================================================ */
+
+.about-profile {
+  position: relative;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(53, 230, 255, 0.22);
+
+  background: rgba(3, 14, 20, 0.65);
+
+  backdrop-filter: blur(12px);
+
+  font-family: "Pixelify Sans", monospace;
+}
+
+/* ============================================================
+   CANTOS
+============================================================ */
+
+.profile-corner {
+  position: absolute;
+
+  width: 18px;
+
+  height: 18px;
+
+  z-index: 5;
+}
+
+.profile-corner-tl {
+  top: -1px;
+  left: -1px;
+
+  border-top: 2px solid #35e6ff;
+
+  border-left: 2px solid #35e6ff;
+}
+
+.profile-corner-tr {
+  top: -1px;
+  right: -1px;
+
+  border-top: 2px solid #35e6ff;
+
+  border-right: 2px solid #35e6ff;
+}
+
+.profile-corner-bl {
+  bottom: -1px;
+  left: -1px;
+
+  border-bottom: 2px solid #35e6ff;
+
+  border-left: 2px solid #35e6ff;
+}
+
+.profile-corner-br {
+  bottom: -1px;
+  right: -1px;
+
+  border-bottom: 2px solid #35e6ff;
+
+  border-right: 2px solid #35e6ff;
+}
+
+/* ============================================================
+   PROFILE SCAN
+============================================================ */
+
+.profile-scan {
+  position: absolute;
+
+  left: 0;
+
+  top: -5%;
+
+  z-index: 4;
+
+  width: 100%;
+
+  height: 1px;
+
+  opacity: 0;
+
+  background: linear-gradient(90deg, transparent, #35e6ff, transparent);
+
+  box-shadow: 0 0 12px rgba(53, 230, 255, 0.65);
+}
+
+/* ============================================================
+   PROFILE HEADER
+============================================================ */
+
+.profile-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 20px;
+
+  padding: 18px 22px;
+
+  border-bottom: 1px solid rgba(53, 230, 255, 0.12);
+}
+
+.profile-header > div {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.profile-code {
+  font-size: 0.62rem;
+
+  letter-spacing: 0.14em;
+
+  color: rgba(154, 247, 255, 0.32);
+}
+
+.profile-header strong {
+  color: #d9fcff;
+
+  font-weight: 500;
+
+  letter-spacing: 0.08em;
+}
+
+/* ============================================================
+   STATUS
+============================================================ */
+
+.profile-status {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  color: rgba(154, 247, 255, 0.55);
+
+  font-size: 0.68rem;
+
+  letter-spacing: 0.12em;
+}
+
+.profile-status-dot {
+  width: 6px;
+
+  height: 6px;
+
+  background: #ff2d2d;
+
+  box-shadow: 0 0 8px rgba(255, 45, 45, 0.7);
+}
+
+/* ============================================================
+   PROFILE DATA
+============================================================ */
+
+.profile-data {
+  padding: 18px 22px;
+}
+
+.profile-row {
+  display: grid;
+
+  grid-template-columns: 115px 1fr;
+
+  gap: 15px;
+
+  padding: 13px 0;
+
+  border-bottom: 1px dashed rgba(53, 230, 255, 0.1);
+}
+
+.profile-key {
+  color: rgba(154, 247, 255, 0.3);
+
+  font-size: 0.68rem;
+
+  letter-spacing: 0.1em;
+}
+
+.profile-value {
+  color: rgba(217, 252, 255, 0.76);
+
+  font-size: 0.78rem;
+
+  letter-spacing: 0.06em;
+}
+
+/* ============================================================
+   PROFILE IDENTITY
+============================================================ */
+
+.profile-identity {
+  display: grid;
+
+  grid-template-columns: 120px 1fr;
+
+  gap: 25px;
+
+  align-items: center;
+
+  padding: 25px 22px;
+
+  border-top: 1px solid rgba(53, 230, 255, 0.1);
+}
+
+/* ============================================================
+   AVATAR
+============================================================ */
+
+.profile-avatar {
+  aspect-ratio: 1;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 6px;
+
+  border: 1px solid rgba(53, 230, 255, 0.3);
+
+  background: radial-gradient(
+    circle,
+    rgba(53, 230, 255, 0.12),
+    transparent 65%
+  );
+
+  color: #35e6ff;
+}
+
+.avatar-letter {
+  font-size: 3.4rem;
+
+  line-height: 1;
+
+  text-shadow: 0 0 15px rgba(53, 230, 255, 0.5);
+}
+
+.avatar-bracket {
+  color: rgba(53, 230, 255, 0.32);
+}
+
+/* ============================================================
+   ID DATA
+============================================================ */
+
+.profile-id-data {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 8px 15px;
+}
+
+.profile-id-data span {
+  color: rgba(154, 247, 255, 0.28);
+
+  font-size: 0.62rem;
+}
+
+.profile-id-data strong {
+  color: rgba(217, 252, 255, 0.75);
+
+  font-size: 0.72rem;
+
+  font-weight: 500;
+}
+
+.profile-access {
+  color: #35e6ff !important;
+}
+
+/* ============================================================
+   PROFILE FOOTER
+============================================================ */
+
+.profile-footer {
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 12px 22px;
+
+  border-top: 1px solid rgba(53, 230, 255, 0.1);
+
+  color: rgba(154, 247, 255, 0.25);
+
+  font-size: 0.6rem;
+
+  letter-spacing: 0.1em;
+}
+
+/* ============================================================
+   STATS
+============================================================ */
+
+.about-stats {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  margin-top: clamp(90px, 12vw, 150px);
+
+  border-top: 1px solid rgba(53, 230, 255, 0.12);
+
+  border-bottom: 1px solid rgba(53, 230, 255, 0.12);
+}
+
+.about-stat {
+  position: relative;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+
+  padding: 30px clamp(10px, 3vw, 35px);
+
+  font-family: "Pixelify Sans", monospace;
+}
+
+.about-stat:not(:last-child) {
+  border-right: 1px solid rgba(53, 230, 255, 0.12);
+}
+
+.about-stat-number {
+  color: #35e6ff;
+
+  font-size: clamp(1.8rem, 4vw, 3.3rem);
+}
+
+.about-stat-label {
+  color: rgba(154, 247, 255, 0.3);
+
+  font-size: 0.62rem;
+
+  letter-spacing: 0.12em;
+}
+
+/* ============================================================
+   TABLET
+============================================================ */
+
+@media (max-width: 1000px) {
+  .about-container {
+    width: min(100% - 50px, 900px);
+  }
+
+  .about-content {
+    grid-template-columns: 1fr;
+
+    gap: 70px;
+  }
+
+  .about-profile {
+    width: min(650px, 100%);
+  }
+}
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media (max-width: 600px) {
+  .about {
+    padding: 85px 0;
+  }
+
+  .about-container {
+    width: calc(100% - 32px);
+  }
+
+  .section-header {
+    margin-bottom: 65px;
+
+    font-size: 0.62rem;
+  }
+
+  .about-title {
+    font-size: clamp(2.8rem, 15vw, 4.6rem);
+  }
+
+  .about-text {
+    font-size: 0.94rem;
+  }
+
+  .profile-row {
+    grid-template-columns: 90px 1fr;
+  }
+
+  .profile-identity {
+    grid-template-columns: 85px 1fr;
+
+    gap: 18px;
+  }
+
+  .avatar-letter {
+    font-size: 2.5rem;
+  }
+
+  .profile-id-data {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-header {
+    align-items: flex-start;
+  }
+
+  .about-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .about-stat:not(:last-child) {
+    border-right: 0;
+
+    border-bottom: 1px solid rgba(53, 230, 255, 0.12);
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .about *,
+  .about-profile,
+  .about-stat {
+    transform: none !important;
+
+    opacity: 1 !important;
+  }
 }

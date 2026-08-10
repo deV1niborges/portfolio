@@ -5,40 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Portfólio</title>
     <link rel="stylesheet" href="style.css" />
-    <!-- Favicon navegador -->
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Favicons -->
+    <link rel="icon" href="./favicon/favicon.ico?v=3" sizes="any" />
+
     <link
       rel="icon"
       type="image/png"
       sizes="32x32"
-      href="favicon/favicon-32x32.png"
+      href="./favicon/favicon-32x32.png?v=3"
     />
+
     <link
       rel="icon"
       type="image/png"
       sizes="16x16"
-      href="favicon/favicon-16x16.png"
+      href="./favicon/favicon-16x16.png?v=3"
     />
 
-    <!-- iPhone / iOS -->
+    <link rel="shortcut icon" href="./favicon/favicon.ico?v=3" />
+
+    <!-- iPhone -->
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href="favicon/apple-touch-icon.png"
+      href="./favicon/apple-touch-icon-180x180.png?v=3"
     />
 
     <!-- Android -->
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="192x192"
-      href="favicon/android-chrome-192x192.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="512x512"
-      href="favicon/android-chrome-512x512.png"
-    />
+    <link rel="manifest" href="./site.webmanifest?v=3" />
+
     <meta name="theme-color" content="#02060d" />
     <!--
     Importmap: deixa o navegador entender "three" e "gsap" como
@@ -46,7 +50,7 @@
     instalar nada localmente. Isso é o que permite manter o projeto
     em HTML/CSS/JS puro.
   -->
-    <script type="importmap">
+    <script defer type="importmap">
       {
         "imports": {
           "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
@@ -56,8 +60,427 @@
     </script>
   </head>
   <body>
+    <!-- =========================================
+     WELCOME
+========================================= -->
+
+    <section class="welcome-screen" id="welcome-screen" aria-hidden="true">
+      <div class="welcome-noise" aria-hidden="true"></div>
+
+      <div class="welcome-content">
+        <!-- pequenos pixels decorativos -->
+        <div class="welcome-pixels" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <!-- título -->
+        <div class="welcome-title-wrapper">
+          <!-- cópias usadas somente no glitch -->
+          <h1
+            class="welcome-title welcome-title-glitch welcome-title-glitch-a"
+            aria-hidden="true"
+          >
+            BEM-VINDO(A)
+          </h1>
+
+          <h1
+            class="welcome-title welcome-title-glitch welcome-title-glitch-b"
+            aria-hidden="true"
+          >
+            BEM-VINDO(A)
+          </h1>
+
+          <!-- texto real -->
+          <h1 class="welcome-title" id="welcome-title">BEM-VINDO(A)</h1>
+        </div>
+
+        <!-- linha -->
+        <div class="welcome-divider" aria-hidden="true"></div>
+
+        <!-- subtítulo -->
+        <p class="welcome-subtitle" id="welcome-subtitle">AO MEU PORTFÓLIO</p>
+      </div>
+
+      <!-- scanner -->
+      <div class="welcome-scanline" aria-hidden="true"></div>
+    </section>
+    <!-- =========================================================
+     HERO
+========================================================= -->
+
+    <main class="portfolio-content">
+      <section class="hero" id="home" aria-labelledby="hero-title">
+        <!-- fundo digital -->
+        <div class="hero-grid" aria-hidden="true"></div>
+
+        <div class="hero-scan" aria-hidden="true"></div>
+
+        <div class="hero-container">
+          <!-- =====================================================
+           CABEÇALHO DA SEÇÃO
+      ====================================================== -->
+
+          <div class="hero-top">
+            <span class="section-index"> &lt;01 / HOME&gt; </span>
+
+            <div class="hero-status">
+              <span class="status-dot" aria-hidden="true"></span>
+
+              <span> BUSCANDO ESTÁGIO FRONT-END </span>
+            </div>
+          </div>
+
+          <!-- =====================================================
+           CONTEÚDO
+      ====================================================== -->
+
+          <div class="hero-content">
+            <div class="hero-main">
+              <p class="hero-eyebrow">SYSTEM.USER_PROFILE</p>
+
+              <h1 class="hero-name" id="hero-title">
+                <span class="hero-name-line"> VINICIUS </span>
+
+                <span class="hero-name-line hero-name-accent"> BORGES </span>
+              </h1>
+
+              <div class="hero-role">
+                <span class="hero-role-arrow"> &gt; </span>
+
+                <span> FRONT-END DEVELOPER </span>
+
+                <span class="hero-cursor" aria-hidden="true"></span>
+              </div>
+
+              <p class="hero-description">
+                Desenvolvo interfaces modernas, responsivas e interativas
+                utilizando HTML, CSS, JavaScript e React.
+              </p>
+
+              <!-- =================================================
+               BOTÕES
+          ================================================== -->
+
+              <div class="hero-actions">
+                <a href="#projetos" class="hero-button hero-button-primary">
+                  <span> VER PROJETOS </span>
+
+                  <span aria-hidden="true"> ↓ </span>
+                </a>
+
+                <a
+                  href="https://github.com/deV1niborges"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hero-button hero-button-secondary"
+                >
+                  <span> GITHUB </span>
+
+                  <span aria-hidden="true"> ↗ </span>
+                </a>
+              </div>
+            </div>
+
+            <!-- =====================================================
+             PAINEL LATERAL
+        ====================================================== -->
+
+            <aside class="hero-terminal" aria-label="Informações profissionais">
+              <div class="terminal-header">
+                <div class="terminal-dots">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+
+                <span> PROFILE.DATA </span>
+              </div>
+
+              <div class="terminal-body">
+                <div class="terminal-row">
+                  <span> NAME </span>
+
+                  <strong> VINICIUS BORGES </strong>
+                </div>
+
+                <div class="terminal-row">
+                  <span> LOCATION </span>
+
+                  <strong> MINAS GERAIS // BR </strong>
+                </div>
+
+                <div class="terminal-row">
+                  <span> FOCUS </span>
+
+                  <strong> FRONT-END </strong>
+                </div>
+
+                <div class="terminal-row">
+                  <span> EDUCATION </span>
+
+                  <strong> ADS </strong>
+                </div>
+
+                <div class="terminal-row">
+                  <span> STACK </span>
+
+                  <strong> JS / REACT </strong>
+                </div>
+
+                <div class="terminal-divider"></div>
+
+                <div class="terminal-loading">
+                  <span> PROFILE LOADED </span>
+
+                  <span> 100% </span>
+                </div>
+
+                <div class="terminal-progress">
+                  <div class="terminal-progress-bar"></div>
+                </div>
+              </div>
+
+              <div class="terminal-footer">
+                <span> ID: DEV1NIBORGES </span>
+
+                <span> ONLINE </span>
+              </div>
+            </aside>
+          </div>
+
+          <!-- =====================================================
+           RODAPÉ HERO
+      ====================================================== -->
+
+          <div class="hero-bottom">
+            <a
+              href="https://linkedin.com/in/dev1niborges"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hero-social"
+            >
+              LINKEDIN ↗
+            </a>
+
+            <span class="hero-location"> 18°S // 44°W // MG </span>
+
+            <a href="#sobre" class="hero-scroll">
+              SCROLL
+
+              <span aria-hidden="true"> ↓ </span>
+            </a>
+          </div>
+        </div>
+      </section>
+      <!-- =========================================================
+     SOBRE MIM
+========================================================= -->
+
+      <section class="about" id="sobre" aria-labelledby="about-title">
+        <div class="about-grid" aria-hidden="true"></div>
+
+        <div class="about-container">
+          <!-- =====================================================
+         CABEÇALHO
+    ====================================================== -->
+
+          <div class="section-header about-header">
+            <span class="section-index"> &lt;02 / SOBRE&gt; </span>
+
+            <span class="section-system"> USER_PROFILE.DATA </span>
+          </div>
+
+          <!-- =====================================================
+         CONTEÚDO
+    ====================================================== -->
+
+          <div class="about-content">
+            <!-- ===================================================
+           LADO ESQUERDO
+      ==================================================== -->
+
+            <div class="about-intro">
+              <p class="about-label">// WHO_AM_I</p>
+
+              <h2 class="about-title" id="about-title">
+                DESENVOLVENDO
+                <span>IDEIAS</span>
+                EM INTERFACES.
+              </h2>
+
+              <p class="about-text">
+                Sou estudante de Análise e Desenvolvimento de Sistemas, com foco
+                em desenvolvimento Front-end.
+              </p>
+
+              <p class="about-text">
+                Busco transformar ideias em interfaces modernas, responsivas e
+                intuitivas utilizando HTML, CSS, JavaScript e React.
+              </p>
+
+              <p class="about-text">
+                Também possuo experiência prática com APIs REST, Git, GitHub e
+                conhecimentos em Node.js e MongoDB.
+              </p>
+            </div>
+
+            <!-- ===================================================
+           DOSSIÊ
+      ==================================================== -->
+
+            <div class="about-profile">
+              <!-- scan -->
+              <div class="profile-scan" aria-hidden="true"></div>
+
+              <!-- cantos -->
+              <span
+                class="profile-corner profile-corner-tl"
+                aria-hidden="true"
+              ></span>
+
+              <span
+                class="profile-corner profile-corner-tr"
+                aria-hidden="true"
+              ></span>
+
+              <span
+                class="profile-corner profile-corner-bl"
+                aria-hidden="true"
+              ></span>
+
+              <span
+                class="profile-corner profile-corner-br"
+                aria-hidden="true"
+              ></span>
+
+              <!-- =================================================
+             HEADER DO DOSSIÊ
+        ================================================== -->
+
+              <div class="profile-header">
+                <div>
+                  <span class="profile-code"> PROFILE_001 </span>
+
+                  <strong> VINICIUS BORGES </strong>
+                </div>
+
+                <span class="profile-status">
+                  <span class="profile-status-dot" aria-hidden="true"></span>
+
+                  ACTIVE
+                </span>
+              </div>
+
+              <!-- =================================================
+             DADOS
+        ================================================== -->
+
+              <div class="profile-data">
+                <div class="profile-row">
+                  <span class="profile-key"> LOCATION </span>
+
+                  <span class="profile-value"> MINAS GERAIS / BR </span>
+                </div>
+
+                <div class="profile-row">
+                  <span class="profile-key"> ROLE </span>
+
+                  <span class="profile-value"> FRONT-END DEVELOPER </span>
+                </div>
+
+                <div class="profile-row">
+                  <span class="profile-key"> EDUCATION </span>
+
+                  <span class="profile-value"> ADS </span>
+                </div>
+
+                <div class="profile-row">
+                  <span class="profile-key"> GRADUATION </span>
+
+                  <span class="profile-value"> JUL / 2027 </span>
+                </div>
+
+                <div class="profile-row">
+                  <span class="profile-key"> CORE </span>
+
+                  <span class="profile-value"> HTML / CSS / JS / REACT </span>
+                </div>
+
+                <div class="profile-row">
+                  <span class="profile-key"> WORKFLOW </span>
+
+                  <span class="profile-value"> GIT / GITHUB </span>
+                </div>
+              </div>
+
+              <!-- =================================================
+             IDENTIDADE VISUAL
+        ================================================== -->
+
+              <div class="profile-identity">
+                <div class="profile-avatar" aria-hidden="true">
+                  <span class="avatar-bracket"> [ </span>
+
+                  <span class="avatar-letter"> V </span>
+
+                  <span class="avatar-bracket"> ] </span>
+                </div>
+
+                <div class="profile-id-data">
+                  <span> DEV_ID </span>
+
+                  <strong> DEV1NIBORGES </strong>
+
+                  <span> SYSTEM.ACCESS </span>
+
+                  <strong class="profile-access"> GRANTED </strong>
+                </div>
+              </div>
+
+              <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+              <div class="profile-footer">
+                <span> FRONT-END PROFILE </span>
+
+                <span> MG // BR </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- =====================================================
+         MINI INFORMAÇÕES
+    ====================================================== -->
+
+          <div class="about-stats">
+            <div class="about-stat">
+              <span class="about-stat-number"> 2027 </span>
+
+              <span class="about-stat-label"> PREVISÃO DE FORMAÇÃO </span>
+            </div>
+
+            <div class="about-stat">
+              <span class="about-stat-number"> ADS </span>
+
+              <span class="about-stat-label"> FORMAÇÃO </span>
+            </div>
+
+            <div class="about-stat">
+              <span class="about-stat-number"> FRONT </span>
+
+              <span class="about-stat-label"> FOCO PRINCIPAL </span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
     <canvas id="webgl"></canvas>
 
-    <script type="module" src="script.js"></script>
+    <script type="module" defer src="script.js"></script>
   </body>
 </html>

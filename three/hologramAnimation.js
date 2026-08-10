@@ -1,171 +1,969 @@
-import gsap from 'gsap';
-import {
-  GLOW_INTENSITY, GLITCH_INTENSITY, SCANLINE_INTENSITY,
-  CAMERA_ZOOM_DISTANCE, GLOBE_RADIUS, MINAS_LAT, MINAS_LON,
-} from './constants.js';
-import { latLonToVector3 } from './coordinates.js';
+import gsap from "gsap";
 
-/**
- * Calcula quanto girar o globo (em torno do eixo Y) pra trazer o
- * marcador de Minas Gerais — e, com ele, a América do Sul/Brasil —
- * pra uma posição de frente pra câmera (que fica parada olhando na
- * direção -Z, a partir de um ponto com Z positivo).
- *
- * A conta: pegamos a posição do marcador ANTES de qualquer rotação
- * (rotation.y = 0) e olhamos só pro plano XZ (é em volta do eixo Y
- * que o globo vai girar, então a altura Y do ponto não muda).
- * `Math.atan2(x, z)` dá o ângulo atual desse ponto em relação ao
- * eixo +Z. Girar o grupo por exatamente o ângulo oposto (-ângulo)
- * traz esse ponto pra cima do eixo +Z — de frente pra câmera.
- */
+import * as THREE from "three";
+
+import {
+  GLOW_INTENSITY,
+  GLITCH_INTENSITY,
+  SCANLINE_INTENSITY,
+  CAMERA_ZOOM_DISTANCE,
+  CAMERA_FOCUS_Z,
+  CAMERA_FOCUS_Z_PORTRAIT,
+  GLOBE_RADIUS,
+  MINAS_LAT,
+  MINAS_LON,
+} from "./constants.js";
+
+import { latLonToVector3 } from "./coordinates.js";
+
+// ============================================================
+// ROTAÇÃO PARA MINAS\n// ============================================================
+
 function getRotationToFaceCamera() {
-  const markerPos = latLonToVector3(MINAS_LAT, MINAS_LON, GLOBE_RADIUS);
-  const currentAngle = Math.atan2(markerPos.x, markerPos.z);
+  const markerPos = latLonToVector3(
+    MINAS_LAT,
+
+    MINAS_LON,
+
+    GLOBE_RADIUS,
+  );
+
+  const currentAngle = Math.atan2(
+    markerPos.x,
+
+    markerPos.z,
+  );
+
   return -currentAngle;
 }
 
-/**
- * Monta toda a sequência de entrada/saída do holograma numa única
- * gsap.timeline(), seguindo exatamente a ordem pedida:
- *
- * PROJEÇÃO -> GLOBO FORMADO -> ROTAÇÃO -> ZOOM -> MINAS GERAIS
- * -> PULSE -> GLITCH -> DESLIGAMENTO -> INTRO COMPLETA
- *
- * Cada `.addLabel('nome', tempo)` marca um ponto no tempo total da
- * timeline, e os `.to(..., 'nome')` ou `.to(..., 'nome+=0.3')`
- * seguintes se posicionam relativos a esse label. É isso que
- * substitui dezenas de gsap.to() soltos: toda a coreografia fica
- * legível num único lugar, na ordem em que ela acontece.
- */
+// ============================================================
+// ZOOM RESPONSIVO
+// ============================================================
+
+function getFocusCameraZ() {
+  const portrait = window.innerHeight > window.innerWidth;
+
+  return portrait ? CAMERA_FOCUS_Z_PORTRAIT : CAMERA_FOCUS_Z;
+}
+
+// ============================================================
+// TIMELINE
+// ============================================================
+
 export function createIntroTimeline({
-  globe, marker, camera, postFX, horizonLine, onComplete,
+  globe,
+
+  marker,
+
+  minasState,
+
+  camera,
+
+  postFX,
+
+  horizonLine,
+
+  onComplete,
 }) {
   const [baseMat, wireMat, continentsMat, glowMat] = globe.materials;
-  const targetRotationY = getRotationToFaceCamera();
-  const zoomTargetZ = camera.position.z - CAMERA_ZOOM_DISTANCE;
 
-  // Flicker contínuo e sutil no wireframe, enquanto o globo está
-  // "vivo" (formado). Usamos valores gerados por função em vez de
-  // números fixos, junto com `repeatRefresh: true`, pra que o GSAP
-  // sorteie um novo valor/duração a cada repetição — isso que dá a
-  // sensação de instabilidade de sinal, sem precisar escrever nosso
-  // próprio código de ruído no loop de render.
-  const flicker = gsap.to(wireMat, {
-    opacity: () => 0.16 + Math.random() * 0.16,
-    duration: () => 0.05 + Math.random() * 0.35,
-    repeat: -1,
-    repeatRefresh: true,
-    ease: 'none',
-    paused: true,
-  });
+  const targetRotationY = getRotationToFaceCamera();
+
+  const rotationZoomZ = camera.position.z - CAMERA_ZOOM_DISTANCE;
+
+  const markerWorldPosition = new THREE.Vector3();
+
+  // ============================================================
+  // FLICKER
+  // ============================================================
+
+  const flicker = gsap.to(
+    wireMat,
+
+    {
+      opacity: () => 0.15 + Math.random() * 0.11,
+
+      duration: () => 0.08 + Math.random() * 0.3,
+
+      repeat: -1,
+
+      repeatRefresh: true,
+
+      ease: "none",
+
+      paused: true,
+    },
+  );
+
+  // ============================================================
+  // TIMELINE
+  // ============================================================
 
   const tl = gsap.timeline({
-    defaults: { ease: 'power2.out' },
+    defaults: {
+      ease: "power2.out",
+    },
+
     onComplete,
   });
 
-  // ---------- ESTADO INICIAL: tudo invisível/achatado ----------
-  gsap.set(globe.group.scale, { x: 1, y: 0.001, z: 1 });
-  gsap.set([baseMat, wireMat, continentsMat], { opacity: 0 });
-  gsap.set(glowMat.uniforms.uIntensity, { value: 0 });
-  gsap.set(globe.particles.material, { opacity: 0 });
-  gsap.set([marker.dot.material, marker.glow.material, marker.ring.material], { opacity: 0 });
-  gsap.set(marker.ring.scale, { x: 0.3, y: 0.3 });
+  // ============================================================
+  // ESTADO INICIAL
+  // ============================================================
 
-  // ---------- PROJEÇÃO (a faixa/linha que anuncia o globo) ----------
-  tl.addLabel('projecao', 0.2);
-  tl.to(horizonLine.material, { opacity: 0.9, duration: 0.15 }, 'projecao');
-  tl.to(horizonLine.scale, { x: 1, duration: 0.2, ease: 'power1.out' }, 'projecao');
+  gsap.set(
+    globe.group.scale,
 
-  // ---------- GLOBO FORMADO (constrói de baixo pra cima) ----------
-  tl.addLabel('formacao', 0.3);
-  tl.to(globe.group.scale, {
-    y: 1.03, // overshoot: passa um pouco do tamanho final...
-    duration: 0.5,
-    ease: 'back.out(2)',
-  }, 'formacao');
-  tl.to(globe.group.scale, {
-    y: 1, // ...e estabiliza rapidamente. Sensação mais cartunesca
-    duration: 0.15, // que fisicamente realista, como pedido.
-    ease: 'power1.out',
-  }, 'formacao+=0.5');
-  tl.to(baseMat, { opacity: 0.06, duration: 0.5 }, 'formacao');
-  tl.to(wireMat, { opacity: 0.25, duration: 0.5 }, 'formacao');
-  tl.to(continentsMat, { opacity: 0.9, duration: 0.5 }, 'formacao');
-  tl.to(glowMat.uniforms.uIntensity, { value: GLOW_INTENSITY, duration: 0.6 }, 'formacao');
-  tl.to(globe.particles.material, { opacity: 0.6, duration: 0.7 }, 'formacao');
-  tl.to(horizonLine.material, { opacity: 0, duration: 0.3 }, 'formacao+=0.25');
-  tl.call(() => flicker.play(), [], 'formacao+=0.6');
+    {
+      x: 1,
 
-  // ---------- ROTAÇÃO (traz Brasil/América do Sul pra frente) ----------
-  tl.addLabel('rotacao', 'formacao+=0.65');
-  tl.to(globe.group.rotation, {
-    y: targetRotationY,
-    duration: 1,
-    ease: 'power3.inOut',
-  }, 'rotacao');
+      y: 0.001,
 
-  // ---------- ZOOM (câmera de verdade, não CSS) ----------
-  // Acontece ao mesmo tempo que a rotação, como pedido.
-  tl.to(camera.position, {
-    z: zoomTargetZ,
-    duration: 1,
-    ease: 'power2.inOut',
-  }, 'rotacao');
+      z: 1,
+    },
+  );
 
-  // ---------- MINAS GERAIS ----------
-  tl.addLabel('minas', 'rotacao+=0.9');
-  tl.to(marker.dot.material, { opacity: 1, duration: 0.15 }, 'minas');
-  tl.to(marker.glow.material, { opacity: 0.7, duration: 0.15 }, 'minas');
+  gsap.set(
+    [baseMat, wireMat, continentsMat],
 
-  // ---------- PULSE (dois pulsos rápidos do anel) ----------
-  tl.addLabel('pulse', 'minas+=0.1');
-  // 1º pulso: ● -> ◉ -> ◎ (anel nasce pequeno, expande e desaparece)
-  tl.to(marker.ring.material, { opacity: 0.8, duration: 0.05 }, 'pulse');
-  tl.to(marker.ring.scale, { x: 1.8, y: 1.8, duration: 0.35 }, 'pulse');
-  tl.to(marker.ring.material, { opacity: 0, duration: 0.35 }, 'pulse');
-  // 2º pulso: reseta o anel e repete
-  tl.set(marker.ring.scale, { x: 0.3, y: 0.3 }, 'pulse+=0.4');
-  tl.to(marker.ring.material, { opacity: 0.8, duration: 0.05 }, 'pulse+=0.4');
-  tl.to(marker.ring.scale, { x: 1.8, y: 1.8, duration: 0.3 }, 'pulse+=0.4');
-  tl.to(marker.ring.material, { opacity: 0, duration: 0.3 }, 'pulse+=0.4');
+    {
+      opacity: 0,
+    },
+  );
 
-  // Pequeno "impacto" cartunesco no globo inteiro quando Minas é encontrada
-  tl.to(globe.group.scale, {
-    x: 1.02, z: 1.02, duration: 0.08, yoyo: true, repeat: 1,
-  }, 'pulse');
-  tl.to(glowMat.uniforms.uIntensity, {
-    value: GLOW_INTENSITY * 1.6, duration: 0.1, yoyo: true, repeat: 1,
-  }, 'pulse');
+  gsap.set(
+    glowMat.uniforms.uIntensity,
 
-  // ---------- GLITCH curto ----------
-  tl.addLabel('glitch', 'pulse+=0.05');
-  tl.to(postFX.uniforms.uGlitchIntensity, {
-    value: GLITCH_INTENSITY, duration: 0.05, yoyo: true, repeat: 3,
-  }, 'glitch');
+    {
+      value: 0,
+    },
+  );
 
-  // ---------- DESLIGAMENTO ----------
-  // Mantém o holograma visível por ~0.5s depois do pulso, depois desliga.
-  tl.addLabel('desligamento', 'pulse+=0.9');
-  tl.call(() => flicker.pause(), [], 'desligamento');
-  tl.to(postFX.uniforms.uGlitchIntensity, {
-    value: GLITCH_INTENSITY * 1.4, duration: 0.06, yoyo: true, repeat: 3,
-  }, 'desligamento');
-  tl.to(postFX.uniforms.uScanlineIntensity, {
-    value: SCANLINE_INTENSITY * 3, duration: 0.2,
-  }, 'desligamento');
-  tl.to(glowMat.uniforms.uIntensity, { value: 0, duration: 0.5 }, 'desligamento');
-  tl.to(globe.particles.material, { opacity: 0, duration: 0.4 }, 'desligamento');
-  tl.to(globe.group.scale, {
-    y: 0.05, duration: 0.5, ease: 'power2.in',
-  }, 'desligamento+=0.1');
-  tl.to([baseMat, wireMat, continentsMat], { opacity: 0, duration: 0.4 }, 'desligamento+=0.15');
-  tl.to([marker.dot.material, marker.glow.material], { opacity: 0, duration: 0.3 }, 'desligamento');
-  tl.to(postFX.uniforms.uOpacity, { value: 0, duration: 0.35 }, 'desligamento+=0.25');
+  gsap.set(
+    globe.particles.material,
 
-  // ---------- INTRO COMPLETA ----------
-  tl.addLabel('completa', 'desligamento+=0.6');
-  tl.call(() => flicker.kill(), [], 'completa');
+    {
+      opacity: 0,
+    },
+  );
+
+  gsap.set(
+    [
+      marker.backplate.material,
+
+      marker.dot.material,
+
+      marker.glow.material,
+
+      marker.ring.material,
+    ],
+
+    {
+      opacity: 0,
+    },
+  );
+
+  gsap.set(
+    marker.ring.scale,
+
+    {
+      x: 0.25,
+
+      y: 0.25,
+
+      z: 1,
+    },
+  );
+
+  // Minas começa completamente apagada
+
+  gsap.set(
+    [
+      minasState.outline.material,
+
+      minasState.borderPixels.material,
+
+      minasState.borderGlow.material,
+
+      minasState.fill.material,
+    ],
+
+    {
+      opacity: 0,
+    },
+  );
+
+  // ============================================================
+  // PROJEÇÃO
+  // ============================================================
+
+  tl.addLabel(
+    "projecao",
+
+    0.18,
+  );
+
+  tl.to(
+    horizonLine.material,
+
+    {
+      opacity: 0.82,
+
+      duration: 0.12,
+    },
+
+    "projecao",
+  );
+
+  tl.to(
+    horizonLine.scale,
+
+    {
+      x: 1,
+
+      duration: 0.2,
+
+      ease: "power1.out",
+    },
+
+    "projecao",
+  );
+
+  // ============================================================
+  // FORMAÇÃO
+  // ============================================================
+
+  tl.addLabel(
+    "formacao",
+
+    0.28,
+  );
+
+  tl.to(
+    globe.group.scale,
+
+    {
+      y: 1.03,
+
+      duration: 0.5,
+
+      ease: "back.out(1.8)",
+    },
+
+    "formacao",
+  );
+
+  tl.to(
+    globe.group.scale,
+
+    {
+      y: 1,
+
+      duration: 0.14,
+
+      ease: "power1.out",
+    },
+
+    "formacao+=0.5",
+  );
+
+  tl.to(
+    baseMat,
+
+    {
+      opacity: 0.045,
+
+      duration: 0.45,
+    },
+
+    "formacao",
+  );
+
+  tl.to(
+    wireMat,
+
+    {
+      opacity: 0.22,
+
+      duration: 0.5,
+    },
+
+    "formacao",
+  );
+
+  tl.to(
+    continentsMat,
+
+    {
+      opacity: 0.68,
+
+      duration: 0.5,
+    },
+
+    "formacao",
+  );
+
+  tl.to(
+    glowMat.uniforms.uIntensity,
+
+    {
+      value: GLOW_INTENSITY,
+
+      duration: 0.58,
+    },
+
+    "formacao",
+  );
+
+  tl.to(
+    globe.particles.material,
+
+    {
+      opacity: 0.48,
+
+      duration: 0.65,
+    },
+
+    "formacao",
+  );
+
+  tl.to(
+    horizonLine.material,
+
+    {
+      opacity: 0,
+
+      duration: 0.28,
+    },
+
+    "formacao+=0.25",
+  );
+
+  tl.call(
+    () => {
+      flicker.play();
+    },
+
+    [],
+
+    "formacao+=0.58",
+  );
+
+  // ============================================================
+  // ROTAÇÃO PARA O BRASIL
+  // ============================================================
+
+  tl.addLabel(
+    "rotacao",
+
+    "formacao+=0.64",
+  );
+
+  tl.to(
+    globe.group.rotation,
+
+    {
+      y: targetRotationY,
+
+      duration: 1.05,
+
+      ease: "power3.inOut",
+    },
+
+    "rotacao",
+  );
+
+  // Primeiro zoom leve
+
+  tl.to(
+    camera.position,
+
+    {
+      z: rotationZoomZ,
+
+      duration: 1.05,
+
+      ease: "power2.inOut",
+    },
+
+    "rotacao",
+  );
+
+  // ============================================================
+  // PONTO VERMELHO APARECE
+  // ============================================================
+
+  tl.addLabel(
+    "minas",
+
+    "rotacao+=1",
+  );
+
+  tl.to(
+    marker.backplate.material,
+
+    {
+      opacity: 0.45,
+
+      duration: 0.08,
+    },
+
+    "minas",
+  );
+
+  tl.to(
+    marker.dot.material,
+
+    {
+      opacity: 1,
+
+      duration: 0.08,
+    },
+
+    "minas",
+  );
+
+  tl.to(
+    marker.glow.material,
+
+    {
+      opacity: 0.52,
+
+      duration: 0.12,
+    },
+
+    "minas",
+  );
+
+  tl.fromTo(
+    marker.visualGroup.scale,
+
+    {
+      x: 0.55,
+
+      y: 0.55,
+
+      z: 0.55,
+    },
+
+    {
+      x: 1,
+
+      y: 1,
+
+      z: 1,
+
+      duration: 0.2,
+
+      ease: "back.out(2.2)",
+    },
+
+    "minas",
+  );
+
+  // ============================================================
+  // PRIMEIRO PULSO
+  // ============================================================
+
+  tl.set(
+    marker.ring.scale,
+
+    {
+      x: 0.3,
+
+      y: 0.3,
+
+      z: 1,
+    },
+
+    "minas+=0.05",
+  );
+
+  tl.to(
+    marker.ring.material,
+
+    {
+      opacity: 0.82,
+
+      duration: 0.04,
+    },
+
+    "minas+=0.05",
+  );
+
+  tl.to(
+    marker.ring.scale,
+
+    {
+      x: 1.65,
+
+      y: 1.65,
+
+      duration: 0.35,
+
+      ease: "power2.out",
+    },
+
+    "minas+=0.05",
+  );
+
+  tl.to(
+    marker.ring.material,
+
+    {
+      opacity: 0,
+
+      duration: 0.3,
+    },
+
+    "minas+=0.12",
+  );
+
+  // ============================================================
+  // ZOOM REAL EM MINAS
+  // ============================================================
+
+  tl.addLabel(
+    "focus",
+
+    "minas+=0.28",
+  );
+
+  // pega a posição real do ponto
+  // depois que o globo terminou de girar
+
+  tl.call(
+    () => {
+      marker.group.getWorldPosition(markerWorldPosition);
+    },
+
+    [],
+
+    "focus",
+  );
+
+  // ============================================================
+  // CAMERA VAI ATÉ MINAS
+  // ============================================================
+
+  tl.to(
+    camera.position,
+
+    {
+      x: () => markerWorldPosition.x,
+
+      y: () => markerWorldPosition.y,
+
+      z: () => getFocusCameraZ(),
+
+      duration: 0.86,
+
+      ease: "power3.inOut",
+    },
+
+    "focus",
+  );
+
+  // ============================================================
+  // CONTORNO DE MINAS ACENDE
+  // ============================================================
+
+  tl.to(
+    minasState.outline.material,
+
+    {
+      opacity: 0.9,
+
+      duration: 0.42,
+    },
+
+    "focus+=0.12",
+  );
+
+  // pixels da borda
+
+  tl.to(
+    minasState.borderPixels.material,
+
+    {
+      opacity: 0.95,
+
+      duration: 0.42,
+    },
+
+    "focus+=0.12",
+  );
+
+  // glow externo
+
+  tl.to(
+    minasState.borderGlow.material,
+
+    {
+      opacity: 0.24,
+
+      duration: 0.42,
+    },
+
+    "focus+=0.12",
+  );
+
+  // ============================================================
+  // INTERIOR DE MINAS FICA DESTACADO
+  // ============================================================
+
+  tl.to(
+    minasState.fill.material,
+
+    {
+      opacity: 0.22,
+
+      duration: 0.5,
+    },
+
+    "focus+=0.18",
+  );
+
+  // ============================================================
+  // FLASH NO CONTORNO
+  // ============================================================
+
+  tl.to(
+    minasState.borderGlow.material,
+
+    {
+      opacity: 0.42,
+
+      duration: 0.1,
+
+      yoyo: true,
+
+      repeat: 1,
+    },
+
+    "focus+=0.68",
+  );
+
+  tl.to(
+    minasState.borderGlow.material,
+
+    {
+      size: 0.066,
+
+      duration: 0.1,
+
+      yoyo: true,
+
+      repeat: 1,
+    },
+
+    "focus+=0.68",
+  );
+
+  // ============================================================
+  // SEGUNDO PULSO
+  // ============================================================
+
+  tl.addLabel(
+    "pulse2",
+
+    "focus+=0.64",
+  );
+
+  tl.set(
+    marker.ring.scale,
+
+    {
+      x: 0.3,
+
+      y: 0.3,
+
+      z: 1,
+    },
+
+    "pulse2",
+  );
+
+  tl.to(
+    marker.ring.material,
+
+    {
+      opacity: 0.9,
+
+      duration: 0.04,
+    },
+
+    "pulse2",
+  );
+
+  tl.to(
+    marker.ring.scale,
+
+    {
+      x: 1.9,
+
+      y: 1.9,
+
+      duration: 0.4,
+
+      ease: "power2.out",
+    },
+
+    "pulse2",
+  );
+
+  tl.to(
+    marker.ring.material,
+
+    {
+      opacity: 0,
+
+      duration: 0.32,
+    },
+
+    "pulse2+=0.08",
+  );
+
+  // pequeno flash geral
+
+  tl.to(
+    glowMat.uniforms.uIntensity,
+
+    {
+      value: GLOW_INTENSITY * 1.3,
+
+      duration: 0.09,
+
+      yoyo: true,
+
+      repeat: 1,
+    },
+
+    "pulse2",
+  );
+
+  // ============================================================
+  // SEGURA MINAS NA TELA
+  // ============================================================
+
+  tl.addLabel(
+    "holdMinas",
+
+    "focus+=0.92",
+  );
+
+  // ============================================================
+  // GLITCH
+  // ============================================================
+
+  tl.addLabel(
+    "glitch",
+
+    "holdMinas+=0.3",
+  );
+
+  tl.to(
+    postFX.uniforms.uGlitchIntensity,
+
+    {
+      value: GLITCH_INTENSITY,
+
+      duration: 0.045,
+
+      yoyo: true,
+
+      repeat: 2,
+    },
+
+    "glitch",
+  );
+
+  // ============================================================
+  // DESLIGAMENTO
+  // ============================================================
+
+  tl.addLabel(
+    "desligamento",
+
+    "glitch+=0.28",
+  );
+
+  tl.call(
+    () => {
+      flicker.pause();
+    },
+
+    [],
+
+    "desligamento",
+  );
+
+  // ============================================================
+  // MINAS DESAPARECE
+  // ============================================================
+
+  tl.to(
+    [
+      minasState.outline.material,
+
+      minasState.borderPixels.material,
+
+      minasState.borderGlow.material,
+
+      minasState.fill.material,
+    ],
+
+    {
+      opacity: 0,
+
+      duration: 0.28,
+    },
+
+    "desligamento+=0.12",
+  );
+
+  // ============================================================
+  // SCANLINES
+  // ============================================================
+
+  tl.to(
+    postFX.uniforms.uScanlineIntensity,
+
+    {
+      value: SCANLINE_INTENSITY * 2.15,
+
+      duration: 0.18,
+    },
+
+    "desligamento",
+  );
+
+  // ============================================================
+  // GLOW APAGA
+  // ============================================================
+
+  tl.to(
+    glowMat.uniforms.uIntensity,
+
+    {
+      value: 0,
+
+      duration: 0.42,
+    },
+
+    "desligamento",
+  );
+
+  // ============================================================
+  // PARTÍCULAS APAGAM
+  // ============================================================
+
+  tl.to(
+    globe.particles.material,
+
+    {
+      opacity: 0,
+
+      duration: 0.32,
+    },
+
+    "desligamento",
+  );
+
+  // ============================================================
+  // GLOBO DESAPARECE
+  // ============================================================
+
+  tl.to(
+    [baseMat, wireMat, continentsMat],
+
+    {
+      opacity: 0,
+
+      duration: 0.38,
+    },
+
+    "desligamento+=0.05",
+  );
+
+  // ============================================================
+  // COLAPSO VERTICAL
+  // ============================================================
+
+  tl.to(
+    globe.group.scale,
+
+    {
+      y: 0.045,
+
+      duration: 0.44,
+
+      ease: "power2.in",
+    },
+
+    "desligamento+=0.06",
+  );
+
+  // ============================================================
+  // MARCADOR SOME POR ÚLTIMO
+  // ============================================================
+
+  tl.to(
+    [
+      marker.backplate.material,
+
+      marker.dot.material,
+
+      marker.glow.material,
+
+      marker.ring.material,
+    ],
+
+    {
+      opacity: 0,
+
+      duration: 0.2,
+    },
+
+    "desligamento+=0.2",
+  );
+
+  // ============================================================
+  // TELA PRETA
+  // ============================================================
+
+  tl.to(
+    postFX.uniforms.uOpacity,
+
+    {
+      value: 0,
+
+      duration: 0.3,
+    },
+
+    "desligamento+=0.22",
+  );
+
+  // ============================================================
+  // INTRO COMPLETA
+  // ============================================================
+
+  tl.addLabel(
+    "completa",
+
+    "desligamento+=0.56",
+  );
+
+  tl.call(
+    () => {
+      flicker.kill();
+    },
+
+    [],
+
+    "completa",
+  );
 
   return tl;
 }

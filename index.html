@@ -1,15 +1,63 @@
 <!doctype html>
-<html lang="pt-br">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portifolio</title>
+    <title>Portfólio</title>
     <link rel="stylesheet" href="style.css" />
-    <script defer src="script.js"></script>
+    <!-- Favicon navegador -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="favicon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="favicon/favicon-16x16.png"
+    />
+
+    <!-- iPhone / iOS -->
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="favicon/apple-touch-icon.png"
+    />
+
+    <!-- Android -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="favicon/android-chrome-192x192.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="512x512"
+      href="favicon/android-chrome-512x512.png"
+    />
+    <meta name="theme-color" content="#02060d" />
+    <!--
+    Importmap: deixa o navegador entender "three" e "gsap" como
+    módulos ES normais, sem precisar de bundler (Vite/Webpack) nem
+    instalar nada localmente. Isso é o que permite manter o projeto
+    em HTML/CSS/JS puro.
+  -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+          "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/+esm"
+        }
+      }
+    </script>
   </head>
   <body>
-    <div>
-      <h1>NADA</h1>
-    </div>
+    <canvas id="webgl"></canvas>
+
+    <script type="module" src="script.js"></script>
   </body>
 </html>
